@@ -6,6 +6,7 @@
     <title>VIBZ LAB | Official Tour</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bibliothèques pour le PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -22,13 +23,13 @@
             background-color: var(--bg); 
             color: #ffffff;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .input-premium {
@@ -48,6 +49,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .city-chip.active {
@@ -55,8 +57,7 @@
             color: black;
             border-color: var(--gold);
             font-weight: 800;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            transform: scale(1.05);
         }
 
         .btn-main {
@@ -66,26 +67,30 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
-        .btn-main:active { transform: scale(0.96); }
+        .btn-main:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .gold-glow {
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
 
-        .animate-slide-up { animation: slideUp 0.5s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="min-h-screen selection:bg-[#D4AF37] selection:text-black">
+<body class="min-h-screen">
 
+    <!-- Navigation -->
     <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3">
@@ -93,103 +98,101 @@
             </div>
             <span class="font-extrabold text-2xl tracking-tighter uppercase italic">Vibz<span class="text-[#D4AF37]">Lab</span></span>
         </div>
-        <button onclick="openLogin()" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37] transition-colors">
+        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37] transition-colors">
             Espace Admin
         </button>
     </nav>
 
-    <main class="max-w-xl mx-auto px-6 py-8">
+    <main class="max-w-xl mx-auto px-6 py-4">
         
-        <!-- Formulaire Artiste -->
-        <div id="artist-view" class="animate-slide-up">
-            <header class="mb-10 text-center">
-                <h1 class="text-5xl font-extrabold uppercase italic mb-3">Rejoins la <span class="text-[#D4AF37] gold-glow">Tournée</span></h1>
-                <p class="text-white/40 text-xs font-bold uppercase tracking-[0.3em]">L'excellence artistique au Togo</p>
+        <!-- Vue Inscription -->
+        <section id="view-artist" class="animate-fade-in">
+            <header class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold uppercase italic mb-2">Tournée <span class="text-[#D4AF37] gold-glow">Vibz</span></h1>
+                <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">L'excellence artistique au Togo</p>
             </header>
 
-            <div class="glass-card p-8 rounded-[2.5rem] shadow-2xl border-t border-white/10">
-                <form id="regForm" class="space-y-8">
-                    <!-- Champ Nom -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Comment on t'appelle ?</label>
-                        <input type="text" id="name" required placeholder="Nom de scène..." 
-                            class="input-premium w-full p-5 rounded-2xl text-white font-bold text-lg placeholder:text-white/10">
+            <div class="glass-card p-6 md:p-8 rounded-[2rem] shadow-2xl">
+                <form id="registrationForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Nom de scène</label>
+                        <input type="text" id="artistName" required placeholder="Ex: King Vibz" 
+                            class="input-premium w-full p-4 rounded-xl text-white font-bold">
                     </div>
                     
-                    <!-- Sélecteur de Villes (Nouveau Format Chips) -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Choisis ta ville étape</label>
-                        <div class="flex flex-wrap gap-2" id="city-selector">
-                            <div class="city-chip px-5 py-3 rounded-full text-xs font-bold uppercase" data-value="Sotouboua">Sotouboua</div>
-                            <div class="city-chip px-5 py-3 rounded-full text-xs font-bold uppercase" data-value="Sokodé">Sokodé</div>
-                            <div class="city-chip px-5 py-3 rounded-full text-xs font-bold uppercase" data-value="Kara">Kara</div>
-                            <div class="city-chip px-5 py-3 rounded-full text-xs font-bold uppercase" data-value="Mango">Mango</div>
-                            <div class="city-chip px-5 py-3 rounded-full text-xs font-bold uppercase" data-value="Dapaong">Dapaong</div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Ville étape</label>
+                        <div class="flex flex-wrap gap-2" id="cityChipsContainer">
+                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sotouboua">Sotouboua</button>
+                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sokodé">Sokodé</button>
+                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Kara">Kara</button>
+                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Mango">Mango</button>
+                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Dapaong">Dapaong</button>
                         </div>
-                        <input type="hidden" id="selectedCity" required>
+                        <input type="hidden" id="selectedCityInput" required>
                     </div>
 
-                    <!-- Champ Contact -->
-                    <div class="space-y-3">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Numéro WhatsApp (8 chiffres)</label>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Numéro WhatsApp</label>
                         <div class="relative">
-                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 font-bold">+228</span>
-                            <input type="tel" id="phone" required maxlength="8" placeholder="00 00 00 00" 
-                                class="input-premium w-full p-5 pl-16 rounded-2xl text-white font-bold text-lg tracking-widest placeholder:text-white/10">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-bold">+228</span>
+                            <input type="tel" id="artistPhone" required maxlength="8" placeholder="00000000" 
+                                class="input-premium w-full p-4 pl-16 rounded-xl text-white font-bold tracking-widest">
                         </div>
                     </div>
 
-                    <button type="submit" id="submit-btn" class="btn-main w-full py-5 rounded-2xl text-base shadow-[0_10px_30px_rgba(212,175,55,0.2)]">
-                        Confirmer l'inscription
+                    <button type="submit" id="submitBtn" class="btn-main w-full py-4 rounded-xl text-sm shadow-lg">
+                        S'inscrire à la tournée
                     </button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Dashboard Staff -->
-        <div id="staff-view" class="hidden animate-slide-up">
-            <div class="flex justify-between items-end mb-10">
+        <!-- Vue Admin (Candidatures) -->
+        <section id="view-admin" class="hidden animate-fade-in">
+            <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h2 class="text-4xl font-extrabold uppercase italic gold-glow">Candidatures</h2>
-                    <p id="stats-count" class="text-white/40 text-[10px] uppercase font-black mt-2">Chargement des données...</p>
+                    <h2 class="text-3xl font-extrabold uppercase italic">Candidats</h2>
+                    <p id="statsLabel" class="text-[#D4AF37] text-[10px] uppercase font-black">Chargement...</p>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="generatePDF()" class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black">
-                        <i class="fas fa-download"></i>
+                <div class="flex gap-2">
+                    <button id="downloadPdfBtn" class="w-10 h-10 glass-card rounded-lg flex items-center justify-center text-[#D4AF37]">
+                        <i class="fas fa-file-pdf"></i>
                     </button>
-                    <button onclick="location.reload()" class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white">
-                        <i class="fas fa-power-off"></i>
+                    <button id="exitAdminBtn" class="w-10 h-10 glass-card rounded-lg flex items-center justify-center text-red-500">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
 
-            <div id="data-list" class="space-y-4">
-                <!-- Dynamique -->
+            <div id="candidatesList" class="space-y-3">
+                <!-- Rempli par JS -->
             </div>
-        </div>
+        </section>
     </main>
 
-    <!-- Modal Succès -->
-    <div id="success-msg" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center z-50 p-6">
-        <div class="text-center space-y-6">
-            <div class="w-24 h-24 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(212,175,55,0.4)]">
-                <i class="fas fa-check text-4xl text-black"></i>
+    <!-- Modal Login -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-6 backdrop-blur-sm">
+        <div class="glass-card p-8 rounded-[2rem] w-full max-w-xs text-center">
+            <h4 class="text-[10px] font-black uppercase text-white/40 mb-6 tracking-widest">Accès Sécurisé</h4>
+            <input type="password" id="adminPass" maxlength="4" placeholder="••••" 
+                class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-6 text-[#D4AF37]">
+            <div class="grid grid-cols-2 gap-3">
+                <button id="cancelLoginBtn" class="text-white/20 text-[10px] font-bold uppercase">Annuler</button>
+                <button id="confirmLoginBtn" class="btn-main py-3 rounded-lg text-xs">Entrer</button>
             </div>
-            <h3 class="text-4xl font-black uppercase italic">Validé !</h3>
-            <p class="text-white/50 max-w-xs mx-auto">Ton profil est désormais dans notre base de données. Prépare ton meilleur show.</p>
-            <button onclick="location.reload()" class="btn-main px-12 py-4 rounded-full text-xs">Retour à l'accueil</button>
         </div>
     </div>
 
-    <!-- Modal Admin -->
-    <div id="login-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-6">
-        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-xs text-center border-white/10">
-            <h4 class="text-[10px] font-black uppercase text-white/30 mb-8 tracking-[0.3em]">Code de sécurité</h4>
-            <div class="flex gap-2 justify-center mb-8">
-                <input type="password" id="pass" maxlength="3" class="w-24 bg-white/5 border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none text-[#D4AF37]">
+    <!-- Modal Succès -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black/98 flex items-center justify-center z-50 p-6">
+        <div class="text-center space-y-6">
+            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center">
+                <i class="fas fa-check text-3xl text-black"></i>
             </div>
-            <button onclick="checkPass()" class="btn-main w-full py-4 rounded-xl text-xs mb-4">Accéder</button>
-            <button onclick="closeLogin()" class="text-white/20 text-[10px] font-bold uppercase tracking-widest">Annuler</button>
+            <h3 class="text-3xl font-black uppercase italic">Inscription Réussie</h3>
+            <p class="text-white/40 text-sm">Tu fais désormais partie de l'aventure Vibz Lab.</p>
+            <button onclick="window.location.reload()" class="btn-main px-10 py-3 rounded-full text-xs">Terminer</button>
         </div>
     </div>
 
@@ -198,125 +201,156 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // Initialisation
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-v2';
 
-        let artists = [];
-        let currentUser = null;
-        let unsubscribeData = null;
+        let allCandidates = [];
+        let user = null;
 
-        // Gestion du sélecteur de villes personnalisé
-        const chips = document.querySelectorAll('.city-chip');
-        chips.forEach(chip => {
-            chip.onclick = () => {
-                chips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                document.getElementById('selectedCity').value = chip.dataset.value;
-            };
-        });
-
-        // AUTH
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (e) { console.error(e); }
+        // AUTHENTICATION
+        const handleAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
         };
 
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
+        onAuthStateChanged(auth, (u) => {
+            user = u;
         });
 
-        initAuth();
+        handleAuth();
 
-        // Enregistrement
-        document.getElementById('regForm').onsubmit = async (e) => {
+        // UI : Sélecteur de ville
+        const chips = document.querySelectorAll('.city-chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                document.getElementById('selectedCityInput').value = chip.dataset.city;
+            });
+        });
+
+        // FORMULAIRE : Soumission
+        document.getElementById('registrationForm').onsubmit = async (e) => {
             e.preventDefault();
-            const city = document.getElementById('selectedCity').value;
+            if (!user) return;
+
+            const city = document.getElementById('selectedCityInput').value;
             if (!city) {
-                alert("Choisis une ville étape !");
+                alert("Veuillez sélectionner une ville étape !");
                 return;
             }
 
-            const btn = document.getElementById('submit-btn');
-            btn.innerText = "TRAITEMENT...";
+            const btn = document.getElementById('submitBtn');
             btn.disabled = true;
+            btn.innerText = "PATIENTEZ...";
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
-                    name: document.getElementById('name').value,
+                    name: document.getElementById('artistName').value,
                     city: city,
-                    phone: document.getElementById('phone').value,
-                    date: serverTimestamp()
+                    phone: document.getElementById('artistPhone').value,
+                    createdAt: serverTimestamp()
                 });
-                document.getElementById('success-msg').classList.remove('hidden');
+                document.getElementById('successModal').classList.remove('hidden');
             } catch (err) {
-                btn.innerText = "ERREUR - RÉESSAYER";
+                console.error(err);
                 btn.disabled = false;
+                btn.innerText = "ERREUR - RÉESSAYER";
             }
         };
 
-        // ADMIN LOGIC
-        window.openLogin = () => document.getElementById('login-modal').classList.remove('hidden');
-        window.closeLogin = () => document.getElementById('login-modal').classList.add('hidden');
-        
-        window.checkPass = () => {
-            if(document.getElementById('pass').value === "228") {
-                closeLogin();
-                document.getElementById('artist-view').classList.add('hidden');
-                document.getElementById('staff-view').classList.remove('hidden');
-                loadStaffData();
+        // ADMIN : Gestion de l'accès
+        document.getElementById('admin-trigger').onclick = () => {
+            document.getElementById('loginModal').classList.remove('hidden');
+        };
+
+        document.getElementById('cancelLoginBtn').onclick = () => {
+            document.getElementById('loginModal').classList.add('hidden');
+        };
+
+        document.getElementById('confirmLoginBtn').onclick = () => {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === "2024" || pass === "228") {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('view-artist').classList.add('hidden');
+                document.getElementById('view-admin').classList.remove('hidden');
+                startDataListener();
+            } else {
+                document.getElementById('adminPass').value = '';
+                document.getElementById('adminPass').placeholder = "FAUX";
             }
         };
 
-        function loadStaffData() {
-            if (!currentUser) return;
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('date', 'desc'));
+        document.getElementById('exitAdminBtn').onclick = () => {
+            location.reload();
+        };
+
+        // ADMIN : Listener de données
+        function startDataListener() {
+            if (!user) return;
+            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('createdAt', 'desc'));
             
-            unsubscribeData = onSnapshot(q, (snap) => {
-                const list = document.getElementById('data-list');
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('candidatesList');
                 list.innerHTML = '';
-                artists = [];
-                
-                document.getElementById('stats-count').innerText = `${snap.size} Candidatures reçues`;
+                allCandidates = [];
 
-                snap.forEach(d => {
-                    const data = d.data();
-                    artists.push(data);
+                document.getElementById('statsLabel').innerText = `${snapshot.size} Artistes inscrits`;
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    allCandidates.push(data);
                     
-                    const div = document.createElement('div');
-                    div.className = "glass-card p-6 rounded-3xl flex items-center justify-between border-l-4 border-[#D4AF37] animate-slide-up";
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-[#D4AF37] uppercase tracking-widest mb-1">${data.city}</p>
-                            <h4 class="text-xl font-bold uppercase truncate pr-4">${data.name}</h4>
+                    const item = document.createElement('div');
+                    item.className = "glass-card p-4 rounded-2xl flex items-center justify-between animate-fade-in";
+                    item.innerHTML = `
+                        <div class="overflow-hidden">
+                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city || 'Ville'}</p>
+                            <h4 class="font-bold truncate">${data.name}</h4>
                         </div>
-                        <a href="https://wa.me/228${data.phone}" target="_blank" class="w-12 h-12 bg-green-500/10 text-green-500 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
-                            <i class="fab fa-whatsapp text-xl"></i>
-                        </a>
+                        <div class="flex gap-2">
+                            <a href="tel:+228${data.phone}" class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-white/40">
+                                <i class="fas fa-phone-alt"></i>
+                            </a>
+                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-10 h-10 bg-green-500/20 text-green-500 rounded-xl flex items-center justify-center">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
                     `;
-                    list.appendChild(div);
+                    list.appendChild(item);
                 });
+            }, (error) => {
+                console.error("Firestore error:", error);
             });
         }
 
-        window.generatePDF = () => {
+        // PDF GENERATION
+        document.getElementById('downloadPdfBtn').onclick = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("VIBZ LAB TOUR - STAFF LIST", 14, 20);
+            
+            doc.setFontSize(20);
+            doc.setTextColor(212, 175, 55);
+            doc.text("LISTE DES CANDIDATS - VIBZ LAB", 14, 20);
+            
+            const rows = allCandidates.map(c => [c.name, c.city, c.phone]);
+            
             doc.autoTable({
+                head: [['Artiste', 'Ville', 'Contact']],
+                body: rows,
                 startY: 30,
-                head: [['Artiste', 'Ville', 'WhatsApp']],
-                body: artists.map(a => [a.name, a.city, a.phone]),
-                headStyles: { fillColor: [212, 175, 55] }
+                headStyles: { fillColor: [212, 175, 55], textColor: [0, 0, 0] },
+                styles: { fontSize: 10 }
             });
-            doc.save('VibzLab_Staff.pdf');
+            
+            doc.save(`VibzLab_Tour_Candidats.pdf`);
         };
     </script>
 </body>
