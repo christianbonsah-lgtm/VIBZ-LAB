@@ -8,331 +8,159 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f0f0f;
-            color: #ffffff;
-            scroll-behavior: smooth;
-        }
-
-        .gold-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%);
-            color: #000;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* Animation d'entrée */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-in { animation: fadeIn 0.5s ease forwards; }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f0f0f; color: #ffffff; scroll-behavior: smooth; }
+        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-gold { background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%); color: #000; font-weight: 700; transition: all 0.3s ease; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     </style>
 </head>
-<body onload="initApp()" class="overflow-x-hidden">
+<body onload="initApp()">
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 glass-card px-4 md:px-8 py-4 flex justify-between items-center">
-        <!-- Accès discret : cliquer sur le logo active la demande de code -->
-        <div class="flex items-center gap-2 cursor-pointer group" onclick="handleLogoClick()">
-            <div class="w-10 h-10 bg-[#D4AF37] rounded-lg flex items-center justify-center rotate-3 group-hover:rotate-12 transition-transform">
-                <i class="fas fa-bolt text-black text-xl"></i>
-            </div>
+        <div class="flex items-center gap-2 cursor-pointer" onclick="handleLogoClick()">
+            <div class="w-10 h-10 bg-[#D4AF37] rounded-lg flex items-center justify-center rotate-3"><i class="fas fa-bolt text-black text-xl"></i></div>
             <span class="text-2xl font-black tracking-tighter uppercase italic">VIBZ <span class="text-[#D4AF37]">LAB</span></span>
         </div>
-        <div class="flex gap-4 items-center">
-            <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-6 py-2.5 rounded-full text-[10px] uppercase tracking-widest">
-                Postuler
-            </button>
-        </div>
+        <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-6 py-2.5 rounded-full text-[10px] uppercase tracking-widest">Postuler</button>
     </nav>
 
-    <!-- SECTION PUBLIQUE -->
+    <!-- Public Section -->
     <main id="public-section">
-        <!-- Hero -->
         <section class="relative h-screen flex items-center justify-center text-center px-6 overflow-hidden">
-            <div class="absolute inset-0 bg-radial-gradient from-transparent to-black z-10"></div>
-            <img src="https://images.unsplash.com/photo-1514525253361-bee8a19740c1?auto=format&fit=crop&q=80" class="absolute inset-0 w-full h-full object-cover scale-110 opacity-40" alt="Concert">
-            
             <div class="relative z-20 max-w-4xl">
-                <span class="inline-block px-4 py-1 border border-[#D4AF37] text-[#D4AF37] text-[10px] rounded-full uppercase tracking-[0.3em] font-bold mb-6 animate-pulse">Tournée Nationale 2024</span>
-                <h1 class="text-6xl md:text-9xl font-black mb-6 leading-none uppercase">VOTRE <span class="gold-gradient italic">TALENT</span><br>NOTRE MISSION</h1>
-                <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light">Nous parcourons le Togo pour dénicher les prochaines stars de la musique. Sotouboua, Sokodé, Kara, Mango, Dapaong.</p>
-                <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-10 py-5 rounded-2xl text-sm uppercase tracking-widest">S'inscrire maintenant</button>
-                </div>
+                <h1 class="text-6xl md:text-9xl font-black mb-6 uppercase leading-none">VIBZ <span class="gold-gradient italic">LAB</span> TOUR</h1>
+                <p class="text-gray-400 mb-10">La plateforme n°1 pour les talents du Togo.</p>
+                <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-10 py-5 rounded-2xl">S'INSCRIRE MAINTENANT</button>
             </div>
         </section>
 
-        <!-- Formulaire -->
         <section id="apply-form" class="py-24 px-6 bg-[#0a0a0a]">
-            <div class="max-w-xl mx-auto glass-card p-10 rounded-[2rem] border-t-4 border-t-[#D4AF37]">
-                <div class="text-center mb-10">
-                    <h2 class="text-4xl font-black mb-2 uppercase">REJOINDRE LE <span class="text-[#D4AF37]">TOUR</span></h2>
-                    <p class="text-gray-500 text-sm">Préparez-vous pour l'audition de votre ville.</p>
-                </div>
+            <div class="max-w-xl mx-auto glass-card p-10 rounded-[2rem]">
                 <form id="artistForm" class="space-y-6">
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Nom de scène</label>
-                        <input type="text" id="name" placeholder="Ex: King Alpha" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none transition" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Ville</label>
-                            <select id="city" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none transition appearance-none">
-                                <option value="Sotouboua">Sotouboua</option>
-                                <option value="Sokodé">Sokodé</option>
-                                <option value="Kara">Kara</option>
-                                <option value="Mango">Mango</option>
-                                <option value="Dapaong">Dapaong</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">WhatsApp</label>
-                            <input type="tel" id="whatsapp" placeholder="90 00 00 00" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none transition" required>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Lien de démo (Vidéo/Audio)</label>
-                        <input type="url" id="link" placeholder="Lien YouTube, Drive ou SoundCloud" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none transition">
-                    </div>
-                    <button type="submit" class="w-full btn-gold py-5 rounded-2xl text-sm uppercase tracking-widest mt-4">Soumettre mon talent</button>
+                    <input type="text" id="name" placeholder="Nom de scène" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#D4AF37]" required>
+                    <select id="city" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
+                        <option value="Sotouboua">Sotouboua</option>
+                        <option value="Sokodé">Sokodé</option>
+                        <option value="Kara">Kara</option>
+                        <option value="Mango">Mango</option>
+                        <option value="Dapaong">Dapaong</option>
+                    </select>
+                    <input type="tel" id="whatsapp" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none" required>
+                    <input type="url" id="link" placeholder="Lien démo" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
+                    <button type="submit" id="submitBtn" class="w-full btn-gold py-5 rounded-2xl uppercase font-bold">Envoyer ma candidature</button>
                 </form>
             </div>
         </section>
 
-        <!-- Footer Discret avec accès Admin -->
-        <footer class="py-10 text-center opacity-20 hover:opacity-100 transition-opacity">
-            <button onclick="toggleAdmin()" class="text-[10px] uppercase tracking-[0.5em] font-bold">
-                <i class="fas fa-lock mr-2"></i> Accès Réservé
-            </button>
+        <footer class="py-10 text-center opacity-10 hover:opacity-100 transition-opacity">
+            <button onclick="toggleAdmin()" class="text-[10px] uppercase tracking-widest"><i class="fas fa-lock"></i> Staff Only</button>
         </footer>
     </main>
 
-    <!-- SECTION ADMIN -->
+    <!-- Admin Section -->
     <main id="admin-section" class="hidden pt-32 px-6 min-h-screen bg-[#050505]">
         <div class="max-w-6xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
-                <div>
-                    <h1 class="text-4xl font-black uppercase tracking-tighter">Gestion <span class="text-[#D4AF37]">Staff</span></h1>
-                    <p class="text-gray-500">Dashboard interne de suivi des candidatures.</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="exportData()" class="bg-white/5 h-12 w-12 flex items-center justify-center rounded-2xl hover:bg-white/10 border border-white/10 transition" title="Exporter JSON">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <div class="glass-card px-6 py-2 rounded-2xl border-l-4 border-l-[#D4AF37]">
-                        <span id="countTotal" class="block text-2xl font-black text-[#D4AF37]">0</span>
-                        <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Candidats</span>
-                    </div>
-                    <button onclick="showSection('public')" class="bg-white/5 px-6 h-12 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/10">Quitter</button>
-                </div>
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black uppercase tracking-tighter">Staff <span class="text-[#D4AF37]">Live</span></h1>
+                <button onclick="showSection('public')" class="bg-white/10 px-6 py-3 rounded-xl uppercase text-[10px] font-bold">Retour</button>
             </div>
-
-            <!-- Filtres villes -->
-            <div class="flex overflow-x-auto gap-2 mb-8 pb-2 no-scrollbar">
-                <button onclick="filterCity('all', event)" class="city-filter-btn bg-[#D4AF37] text-black px-4 py-2 rounded-xl text-[10px] font-bold uppercase">Tous</button>
-                <button onclick="filterCity('Sotouboua', event)" class="city-filter-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-white/5">Sotouboua</button>
-                <button onclick="filterCity('Sokodé', event)" class="city-filter-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-white/5">Sokodé</button>
-                <button onclick="filterCity('Kara', event)" class="city-filter-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-white/5">Kara</button>
-                <button onclick="filterCity('Mango', event)" class="city-filter-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-white/5">Mango</button>
-                <button onclick="filterCity('Dapaong', event)" class="city-filter-btn bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-white/5">Dapaong</button>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 mb-20" id="candidaturesList">
-                <!-- Rendu JS -->
-            </div>
+            <div id="loading" class="text-center py-10 text-gray-500">Chargement des données depuis Google Sheets...</div>
+            <div id="candidaturesList" class="grid grid-cols-1 gap-4"></div>
         </div>
     </main>
 
     <script>
-        let candidatures = JSON.parse(localStorage.getItem('vibz_apps')) || [];
-        let currentFilter = 'all';
+        // REMPLACE CETTE URL PAR TON URL GOOGLE APPS SCRIPT COPIÉE À L'ÉTAPE 2
+        const SCRIPT_URL = "TON_URL_ICI"; 
+
         let logoClicks = 0;
 
-        function initApp() {
-            renderAdmin();
-            
-            document.getElementById('artistForm').onsubmit = function(e) {
-                e.preventDefault();
-                const newApp = {
-                    id: Date.now(),
-                    name: document.getElementById('name').value,
-                    city: document.getElementById('city').value,
-                    whatsapp: document.getElementById('whatsapp').value,
-                    link: document.getElementById('link').value,
-                    status: 'pending',
-                    date: new Date().toLocaleDateString('fr-FR')
-                };
-                candidatures.push(newApp);
-                saveData();
-                showNotification("Candidature transmise avec succès !");
-                this.reset();
-                renderAdmin();
-            };
-        }
-
-        // Astuce : cliquer 5 fois sur le logo ouvre le staff sans bouton visible
         function handleLogoClick() {
             logoClicks++;
-            if (logoClicks >= 5) {
-                toggleAdmin();
-                logoClicks = 0;
-            }
-            setTimeout(() => { logoClicks = 0; }, 3000); // Reset après 3s
+            if (logoClicks >= 5) { toggleAdmin(); logoClicks = 0; }
+            setTimeout(() => { logoClicks = 0; }, 3000);
         }
 
-        function saveData() {
-            localStorage.setItem('vibz_apps', JSON.stringify(candidatures));
+        async function initApp() {
+            // Pas de stockage local, on laisse vide ou on charge si admin
+        }
+
+        document.getElementById('artistForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "ENVOI EN COURS...";
+            btn.disabled = true;
+
+            const data = {
+                name: document.getElementById('name').value,
+                city: document.getElementById('city').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                link: document.getElementById('link').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                alert("Candidature reçue ! Ton talent est désormais dans le LAB.");
+                this.reset();
+            } catch (error) {
+                alert("Erreur lors de l'envoi. Vérifie ta connexion.");
+            } finally {
+                btn.innerText = "Envoyer ma candidature";
+                btn.disabled = false;
+            }
+        };
+
+        async function fetchCandidatures() {
+            const list = document.getElementById('candidaturesList');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            list.innerHTML = "";
+https://script.google.com/macros/s/AKfycby2RVyC0AxZGgd9L2C-zeax4kI4_XJGuMWDVj5CCNMzoLZwSD6kH_nLnJ7RJhgMBvrJHg/exec
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                loading.style.display = 'none';
+                
+                data.reverse().forEach(app => {
+                    const card = document.createElement('div');
+                    card.className = "glass-card p-6 rounded-3xl flex justify-between items-center";
+                    card.innerHTML = `
+                        <div>
+                            <h3 class="font-bold text-xl">${app.name}</h3>
+                            <p class="text-xs text-gray-500 uppercase">${app.city} • ${app.whatsapp}</p>
+                        </div>
+                        <a href="${app.link}" target="_blank" class="bg-white/10 px-4 py-2 rounded-xl text-[10px] font-bold uppercase">Voir Démo</a>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (e) {
+                loading.innerText = "Impossible de charger les données.";
+            }
         }
 
         function toggleAdmin() {
-            // Le message ne mentionne plus le code par défaut.
-            const pass = prompt("Accès sécurisé VIBZ LAB. Entrez votre identifiant :");
+            const pass = prompt("Accès Staff :");
             if (pass === "228") {
                 showSection('admin');
-            } else if (pass !== null) {
-                showNotification("Code incorrect.");
+                fetchCandidatures();
             }
         }
 
         function showSection(type) {
-            window.scrollTo(0,0);
             if (type === 'admin') {
                 document.getElementById('public-section').classList.add('hidden');
                 document.getElementById('admin-section').classList.remove('hidden');
-                renderAdmin();
             } else {
                 document.getElementById('admin-section').classList.add('hidden');
                 document.getElementById('public-section').classList.remove('hidden');
             }
-        }
-
-        function updateStatus(id, newStatus) {
-            const index = candidatures.findIndex(c => c.id === id);
-            if (index !== -1) {
-                candidatures[index].status = newStatus;
-                saveData();
-                renderAdmin();
-            }
-        }
-
-        function deleteApp(id) {
-            if(confirm("Confirmer la suppression ?")) {
-                candidatures = candidatures.filter(c => c.id !== id);
-                saveData();
-                renderAdmin();
-            }
-        }
-
-        function filterCity(city, event) {
-            currentFilter = city;
-            document.querySelectorAll('.city-filter-btn').forEach(btn => {
-                btn.classList.remove('bg-[#D4AF37]', 'text-black');
-                btn.classList.add('bg-white/5', 'text-white');
-            });
-            event.target.classList.remove('bg-white/5', 'text-white');
-            event.target.classList.add('bg-[#D4AF37]', 'text-black');
-            renderAdmin();
-        }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(candidatures, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `export_vibz_${new Date().toISOString().slice(0,10)}.json`);
-            dlAnchor.click();
-        }
-
-        function showNotification(msg) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-10 left-1/2 -translate-x-1/2 btn-gold px-8 py-4 rounded-2xl z-[100] animate-in text-sm text-center min-w-[280px]";
-            toast.innerText = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
-        function renderAdmin() {
-            const list = document.getElementById('candidaturesList');
-            const count = document.getElementById('countTotal');
-            if (!list) return;
-
-            list.innerHTML = "";
-            let filtered = currentFilter === 'all' ? candidatures : candidatures.filter(c => c.city === currentFilter);
-            count.innerText = filtered.length;
-
-            if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center py-20 border-2 border-dashed border-white/5 rounded-3xl">
-                        <i class="fas fa-folder-open text-4xl text-gray-800 mb-4"></i>
-                        <p class="text-gray-600 font-bold uppercase text-[10px] tracking-widest">Aucun candidat pour le moment</p>
-                    </div>`;
-                return;
-            }
-
-            filtered.slice().reverse().forEach(app => {
-                const card = document.createElement('div');
-                card.className = `glass-card p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 animate-in border-l-4 ${app.status === 'validated' ? 'border-l-green-500 bg-green-500/5' : app.status === 'rejected' ? 'border-l-red-900 opacity-40' : 'border-l-[#D4AF37]'}`;
-                
-                card.innerHTML = `
-                    <div class="flex items-center gap-5 w-full">
-                        <div class="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center text-xl font-black text-[#D4AF37]">
-                            ${app.name.charAt(0)}
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-xl">${app.name}</h3>
-                                <span class="text-[9px] bg-white/10 px-2 py-0.5 rounded-full uppercase text-gray-400">${app.date}</span>
-                            </div>
-                            <div class="flex flex-wrap gap-4 mt-1">
-                                <span class="text-[10px] text-gray-500 font-bold uppercase"><i class="fas fa-map-pin text-[#D4AF37] mr-1"></i> ${app.city}</span>
-                                <a href="https://wa.me/${app.whatsapp}" target="_blank" class="text-[10px] text-green-500 font-bold uppercase hover:underline"><i class="fab fa-whatsapp mr-1"></i> ${app.whatsapp}</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-                        <a href="${app.link}" target="_blank" class="h-12 px-6 flex items-center justify-center bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D4AF37] hover:text-black transition">Démo</a>
-                        
-                        <div class="h-8 w-[1px] bg-white/10 mx-2 hidden md:block"></div>
-
-                        ${app.status === 'pending' ? `
-                            <button onclick="updateStatus(${app.id}, 'validated')" class="h-12 px-6 bg-green-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-green-500">Valider</button>
-                            <button onclick="updateStatus(${app.id}, 'rejected')" class="h-12 px-6 bg-red-600/10 text-red-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600/20">Refuser</button>
-                        ` : `
-                            <button onclick="updateStatus(${app.id}, 'pending')" class="h-12 px-6 bg-white/5 text-gray-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10">Reset</button>
-                        `}
-                        <button onclick="deleteApp(${app.id})" class="h-12 w-12 flex items-center justify-center text-red-900 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
         }
     </script>
 </body>
