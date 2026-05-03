@@ -3,165 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBZ LAB | Plateforme Officielle</title>
+    <title>VIBZ LAB | Système de Gestion Tournée</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Librairies PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f0f0f; color: #ffffff; scroll-behavior: smooth; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-gold { background: linear-gradient(135deg, #D4AF37 0%, #F1D371 100%); color: #000; font-weight: 700; transition: all 0.3s ease; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        :root {
+            --gold: #b38d46; /* Ajusté selon le logo */
+            --gold-light: #d4af37;
+            --black-deep: #0a0a0a;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--black-deep); 
+            color: #ffffff;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #b38d46 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(179, 141, 70, 0.15);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 15px rgba(179, 141, 70, 0.1);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: black;
+            font-weight: 800;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(179, 141, 70, 0.3);
+            filter: brightness(1.1);
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--black-deep);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--gold);
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fade { animation: fadeIn 0.6s ease-out forwards; }
     </style>
 </head>
-<body onload="initApp()">
+<body>
+
+    <!-- Ecran de chargement -->
+    <div id="loader">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center p-2 mb-6 mx-auto animate-pulse">
+                <img src="291aa6cc-146e-42fb-a70a-fce360240c95.jpg" alt="VIBZ LAB" class="w-full h-full object-contain">
+            </div>
+            <p class="text-gold text-[10px] font-black uppercase tracking-[0.4em]">Chargement VIBZ LAB...</p>
+        </div>
+    </div>
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-card px-4 md:px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="handleLogoClick()">
-            <div class="w-10 h-10 bg-[#D4AF37] rounded-lg flex items-center justify-center rotate-3"><i class="fas fa-bolt text-black text-xl"></i></div>
-            <span class="text-2xl font-black tracking-tighter uppercase italic">VIBZ <span class="text-[#D4AF37]">LAB</span></span>
+    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto w-full relative z-50">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="location.reload()">
+            <div class="logo-container shadow-lg shadow-gold/10">
+                <img src="291aa6cc-146e-42fb-a70a-fce360240c95.jpg" alt="VIBZ LAB Logo" class="w-full h-full object-contain p-1">
+            </div>
+            <div>
+                <span class="font-black uppercase text-xl block leading-none tracking-tighter">VIBZ <span class="text-gold">LAB</span></span>
+                <span class="text-[8px] uppercase tracking-[0.3em] text-gray-500 font-bold">L'impulsion de la culture</span>
+            </div>
         </div>
-        <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-6 py-2.5 rounded-full text-[10px] uppercase tracking-widest">Postuler</button>
+        <button id="nav-action-btn" onclick="openLogin()" class="px-6 py-2.5 rounded-xl border border-gold/20 bg-gold/5 hover:bg-gold/10 transition-all">
+            <span class="text-[10px] font-black uppercase tracking-widest text-gold">Accès Staff</span>
+        </button>
     </nav>
 
-    <!-- Public Section -->
-    <main id="public-section">
-        <section class="relative h-screen flex items-center justify-center text-center px-6 overflow-hidden">
-            <div class="relative z-20 max-w-4xl">
-                <h1 class="text-6xl md:text-9xl font-black mb-6 uppercase leading-none">VIBZ <span class="gold-gradient italic">LAB</span> TOUR</h1>
-                <p class="text-gray-400 mb-10">La plateforme n°1 pour les talents du Togo.</p>
-                <button onclick="document.getElementById('apply-form').scrollIntoView()" class="btn-gold px-10 py-5 rounded-2xl">S'INSCRIRE MAINTENANT</button>
-            </div>
-        </section>
+    <main class="p-6 flex items-center justify-center min-h-[80vh]">
+        
+        <!-- Formulaire d'Inscription Artiste -->
+        <div id="artist-card" class="max-w-lg w-full glass-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl animate-fade">
+            <div id="form-content">
+                <div class="mb-10 text-center md:text-left">
+                    <h2 class="text-4xl font-black uppercase italic leading-none mb-3">Rejoins <br><span class="gold-text text-5xl">le mouvement.</span></h2>
+                    <p class="text-gray-500 text-[10px] uppercase font-bold tracking-[0.2em] border-l-2 border-gold pl-4 inline-block md:block">Tournée 228 - Session 4K</p>
+                </div>
 
-        <section id="apply-form" class="py-24 px-6 bg-[#0a0a0a]">
-            <div class="max-w-xl mx-auto glass-card p-10 rounded-[2rem]">
-                <form id="artistForm" class="space-y-6">
-                    <input type="text" id="name" placeholder="Nom de scène" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#D4AF37]" required>
-                    <select id="city" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
-                        <option value="Sotouboua">Sotouboua</option>
-                        <option value="Sokodé">Sokodé</option>
-                        <option value="Kara">Kara</option>
-                        <option value="Mango">Mango</option>
-                        <option value="Dapaong">Dapaong</option>
-                    </select>
-                    <input type="tel" id="whatsapp" placeholder="WhatsApp" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none" required>
-                    <input type="url" id="link" placeholder="Lien démo" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
-                    <button type="submit" id="submitBtn" class="w-full btn-gold py-5 rounded-2xl uppercase font-bold">Envoyer ma candidature</button>
+                <form id="regForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase text-gray-400 font-black tracking-widest ml-1">Nom d'Artiste</label>
+                        <input type="text" id="name" required placeholder="Ex: Mic Lab" class="input-field w-full py-4 px-6 rounded-2xl outline-none text-white text-lg font-bold">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-gray-400 font-black tracking-widest ml-1">Ville Étape</label>
+                            <select id="city" required class="input-field w-full py-4 px-6 rounded-2xl outline-none text-gray-300 appearance-none cursor-pointer">
+                                <option value="" disabled selected>Ville</option>
+                                <option value="Lomé">Lomé</option>
+                                <option value="Sotouboua">Sotouboua</option>
+                                <option value="Sokodé">Sokodé</option>
+                                <option value="Kara">Kara</option>
+                                <option value="Dapaong">Dapaong</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-gray-400 font-black tracking-widest ml-1">WhatsApp</label>
+                            <input type="tel" id="phone" required placeholder="90000000" class="input-field w-full py-4 px-6 rounded-2xl outline-none text-white">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn-premium w-full py-5 rounded-2xl uppercase tracking-widest text-sm mt-4">
+                        Envoyer ma candidature
+                    </button>
                 </form>
             </div>
-        </section>
 
-        <footer class="py-10 text-center opacity-10 hover:opacity-100 transition-opacity">
-            <button onclick="toggleAdmin()" class="text-[10px] uppercase tracking-widest"><i class="fas fa-lock"></i> Staff Only</button>
-        </footer>
-    </main>
-
-    <!-- Admin Section -->
-    <main id="admin-section" class="hidden pt-32 px-6 min-h-screen bg-[#050505]">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-center mb-10">
-                <h1 class="text-4xl font-black uppercase tracking-tighter">Staff <span class="text-[#D4AF37]">Live</span></h1>
-                <button onclick="showSection('public')" class="bg-white/10 px-6 py-3 rounded-xl uppercase text-[10px] font-bold">Retour</button>
+            <!-- Ecran de succès -->
+            <div id="success-content" class="hidden text-center py-10">
+                <div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center p-3 mx-auto mb-8 border-2 border-gold/30">
+                    <img src="291aa6cc-146e-42fb-a70a-fce360240c95.jpg" alt="VIBZ LAB" class="w-full h-full object-contain">
+                </div>
+                <h3 class="text-3xl font-black uppercase mb-4">Candidature <br><span class="gold-text">Validée</span></h3>
+                <p class="text-gray-400 text-sm mb-10 leading-relaxed px-4">Tes infos sont bien reçues. Le Staff VIBZ LAB te contactera sur WhatsApp.</p>
+                <button onclick="resetApp()" class="px-8 py-3 rounded-xl border border-gold/30 text-gold text-[10px] font-black uppercase tracking-widest hover:bg-gold/10">Fermer</button>
             </div>
-            <div id="loading" class="text-center py-10 text-gray-500">Chargement des données depuis Google Sheets...</div>
-            <div id="candidaturesList" class="grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <!-- Dashboard Staff -->
+        <div id="staff-card" class="hidden w-full max-w-7xl mx-auto animate-fade">
+            <div class="flex flex-col lg:flex-row justify-between items-end mb-12 gap-8">
+                <div>
+                    <h2 class="text-6xl font-black uppercase italic gold-text leading-tight">Admin Lab</h2>
+                    <div class="flex items-center gap-4 mt-2">
+                        <span class="w-12 h-1 bg-gold"></span>
+                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.4em]">Gestion des inscriptions en temps réel</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="generateArtistsPDF()" class="flex items-center gap-3 bg-white/5 hover:bg-gold hover:text-black px-8 py-4 rounded-2xl border border-gold/20 transition-all group">
+                        <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Exporter PDF</span>
+                    </button>
+                    <div class="glass-card px-8 py-4 rounded-2xl flex items-center gap-6 border-gold/40">
+                        <div class="text-right">
+                            <span id="stat-count" class="text-3xl font-black text-white block leading-none">0</span>
+                            <span class="text-[8px] uppercase font-bold text-gold tracking-widest">Inscrits</span>
+                        </div>
+                        <i class="fas fa-microphone-alt text-2xl text-gold/30"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div id="registrations-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Artistes -->
+            </div>
         </div>
     </main>
 
-    <script>
-        // REMPLACE CETTE URL PAR TON URL GOOGLE APPS SCRIPT COPIÉE À L'ÉTAPE 2
-        const SCRIPT_URL = "TON_URL_ICI"; 
+    <!-- Modal Login -->
+    <div id="admin-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/95 backdrop-blur-xl">
+        <div class="max-w-sm w-full glass-card p-10 rounded-[3rem] text-center border-gold/30">
+            <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center p-2 mx-auto mb-6">
+                <img src="291aa6cc-146e-42fb-a70a-fce360240c95.jpg" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <h4 class="text-[11px] font-black uppercase gold-text mb-8 tracking-[0.3em]">Code Staff Requis</h4>
+            <input type="password" id="admin-pass" placeholder="••••" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-3xl tracking-[0.5em] outline-none mb-8 text-white focus:border-gold font-black">
+            <button onclick="checkAdmin()" class="btn-premium w-full py-5 rounded-2xl text-xs uppercase tracking-[0.2em] mb-4">Entrer</button>
+            <button onclick="closeLogin()" class="text-[10px] uppercase font-bold text-gray-500 hover:text-white transition-colors">Retour</button>
+        </div>
+    </div>
 
-        let logoClicks = 0;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        function handleLogoClick() {
-            logoClicks++;
-            if (logoClicks >= 5) { toggleAdmin(); logoClicks = 0; }
-            setTimeout(() => { logoClicks = 0; }, 3000);
-        }
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-final';
 
-        async function initApp() {
-            // Pas de stockage local, on laisse vide ou on charge si admin
-        }
+        let currentArtists = [];
+        let user = null;
 
-        document.getElementById('artistForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "ENVOI EN COURS...";
-            btn.disabled = true;
-
-            const data = {
-                name: document.getElementById('name').value,
-                city: document.getElementById('city').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                link: document.getElementById('link').value
+        window.addEventListener('load', async () => {
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
             };
+            await initAuth();
+            
+            onAuthStateChanged(auth, (u) => {
+                user = u;
+                setTimeout(() => {
+                    const loader = document.getElementById('loader');
+                    loader.style.opacity = '0';
+                    loader.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }, 1000);
+            });
+        });
+
+        document.getElementById('regForm').onsubmit = async (e) => {
+            e.preventDefault();
+            if (!user) return;
+
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "ENVOI EN COURS...";
 
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
+                    name: document.getElementById('name').value,
+                    city: document.getElementById('city').value,
+                    phone: document.getElementById('phone').value,
+                    timestamp: serverTimestamp()
                 });
-                alert("Candidature reçue ! Ton talent est désormais dans le LAB.");
-                this.reset();
-            } catch (error) {
-                alert("Erreur lors de l'envoi. Vérifie ta connexion.");
-            } finally {
-                btn.innerText = "Envoyer ma candidature";
+                document.getElementById('form-content').classList.add('hidden');
+                document.getElementById('success-content').classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
                 btn.disabled = false;
+                btn.innerText = "ERREUR";
             }
         };
 
-        async function fetchCandidatures() {
-            const list = document.getElementById('candidaturesList');
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
-            list.innerHTML = "";
-https://script.google.com/macros/s/AKfycbxch8EbIn9-cmVy7AQBYfz4QPxDPZCwqEUDBI6sT5u6QCq4TQFOQTyoUkaKSqRwUa3KIQ/exectry 
-{
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-                loading.style.display = 'none';
+        window.resetApp = () => {
+            document.getElementById('regForm').reset();
+            document.getElementById('success-content').classList.add('hidden');
+            document.getElementById('form-content').classList.remove('hidden');
+        };
+
+        window.openLogin = () => document.getElementById('admin-modal').style.display = 'flex';
+        window.closeLogin = () => document.getElementById('admin-modal').style.display = 'none';
+        
+        window.checkAdmin = () => {
+            if (document.getElementById('admin-pass').value === "228") {
+                closeLogin();
+                document.getElementById('artist-card').classList.add('hidden');
+                document.getElementById('staff-card').classList.remove('hidden');
+                document.getElementById('nav-action-btn').innerHTML = '<span class="text-gold font-bold text-[10px]">ADMIN CONNECTÉ</span>';
+                loadData();
+            }
+        };
+
+        function loadData() {
+            if (!user) return;
+            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('timestamp', 'desc'));
+            
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('registrations-list');
+                document.getElementById('stat-count').innerText = snapshot.size;
+                list.innerHTML = '';
+                currentArtists = [];
                 
-                data.reverse().forEach(app => {
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    currentArtists.push(data);
+                    
                     const card = document.createElement('div');
-                    card.className = "glass-card p-6 rounded-3xl flex justify-between items-center";
+                    card.className = "glass-card p-6 rounded-3xl border-gold/10 relative animate-fade";
                     card.innerHTML = `
-                        <div>
-                            <h3 class="font-bold text-xl">${app.name}</h3>
-                            <p class="text-xs text-gray-500 uppercase">${app.city} • ${app.whatsapp}</p>
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-[9px] uppercase px-3 py-1.5 bg-gold/10 text-gold rounded-lg font-black border border-gold/20">${data.city}</span>
+                            <button onclick="deleteArt('${docSnap.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
                         </div>
-                        <a href="${app.link}" target="_blank" class="bg-white/10 px-4 py-2 rounded-xl text-[10px] font-bold uppercase">Voir Démo</a>
+                        <h4 class="text-xl font-black uppercase text-white mb-6 h-14 overflow-hidden">${data.name}</h4>
+                        <a href="https://wa.me/228${data.phone.replace(/\s/g, '')}" target="_blank" class="flex items-center justify-center gap-3 w-full py-4 bg-white/5 hover:bg-gold hover:text-black rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
+                            <i class="fab fa-whatsapp text-lg"></i> Contacter
+                        </a>
                     `;
                     list.appendChild(card);
                 });
-            } catch (e) {
-                loading.innerText = "Impossible de charger les données.";
-            }
+            });
         }
 
-        function toggleAdmin() {
-            const pass = prompt("Accès Staff :");
-            if (pass === "228") {
-                showSection('admin');
-                fetchCandidatures();
+        window.deleteArt = async (id) => {
+            if(confirm("Supprimer définitivement cet artiste ?")) {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'registrations', id));
             }
-        }
+        };
 
-        function showSection(type) {
-            if (type === 'admin') {
-                document.getElementById('public-section').classList.add('hidden');
-                document.getElementById('admin-section').classList.remove('hidden');
-            } else {
-                document.getElementById('admin-section').classList.add('hidden');
-                document.getElementById('public-section').classList.remove('hidden');
-            }
-        }
+        window.generateArtistsPDF = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const logoPath = "291aa6cc-146e-42fb-a70a-fce360240c95.jpg";
+
+            const img = new Image();
+            img.src = logoPath;
+            img.onload = () => {
+                // Header Design
+                doc.setFillColor(10, 10, 10);
+                doc.rect(0, 0, 210, 50, 'F');
+                doc.addImage(img, 'JPEG', 15, 10, 30, 30);
+
+                doc.setTextColor(179, 141, 70); // Gold
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.text("VIBZ LAB", 50, 25);
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.text("RAPPORT OFFICIEL DES INSCRIPTIONS", 50, 33);
+                
+                const date = new Date().toLocaleDateString('fr-FR');
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Généré le : ${date}`, 50, 39);
+
+                // Table
+                const tableRows = currentArtists.map((art, i) => [
+                    i + 1,
+                    art.name.toUpperCase(),
+                    art.city,
+                    `+228 ${art.phone}`
+                ]);
+
+                doc.autoTable({
+                    startY: 60,
+                    head: [['#', 'ARTISTE / GROUPE', 'VILLE', 'WHATSAPP']],
+                    body: tableRows,
+                    headStyles: { fillColor: [179, 141, 70], textColor: [255, 255, 255] },
+                    styles: { fontSize: 10, cellPadding: 5 },
+                    alternateRowStyles: { fillColor: [250, 250, 250] }
+                });
+
+                doc.save(`VIBZ_LAB_Inscriptions_${date}.pdf`);
+            };
+        };
     </script>
 </body>
 </html>
