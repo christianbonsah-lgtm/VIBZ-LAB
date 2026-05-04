@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBZ LAB - Real-Time</title>
+    <title>VIBZ LAB - Staff Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -16,7 +16,7 @@
 <body class="min-h-screen flex flex-col items-center p-6">
 
     <header class="w-full text-center py-10 cursor-pointer" onclick="showView('register')">
-        <h1 class="text-5xl font-black tracking-tighter italic">VIBZ <span class="accent-color">LAB</span></h1>
+        <h1 class="text-5xl font-black tracking-tighter italic text-white">VIBZ <span class="accent-color">LAB</span></h1>
         <p class="text-[10px] uppercase tracking-[0.5em] text-gray-500 mt-2">Future of Sounds • 2026</p>
     </header>
 
@@ -30,7 +30,6 @@
     </footer>
 
     <script>
-        // CONFIGURATION AVEC VOS CLÉS RÉELLES
         const firebaseConfig = {
             apiKey: "AIzaSyCaKG3bQcenE4yyGPzHoUEwr9lJ6OAssXQ",
             authDomain: "vibz-lab.firebaseapp.com",
@@ -45,7 +44,6 @@
         const db = firebase.database();
         let currentView = 'register';
 
-        // ÉCOUTE DES NOTIFICATIONS
         db.ref('registrations').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && currentView !== 'admin') {
@@ -60,20 +58,20 @@
             if (viewName === 'register') {
                 container.innerHTML = `
                     <div class="space-y-6">
-                        <h2 class="text-2xl font-bold text-center underline decoration-yellow-500 underline-offset-8 uppercase">Inscription</h2>
+                        <h2 class="text-2xl font-bold text-center underline decoration-yellow-500 underline-offset-8 uppercase italic">Inscription Artiste</h2>
                         <div class="space-y-4">
-                            <input type="text" id="name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
-                            <input type="text" id="city" placeholder="VILLE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
-                            <input type="tel" id="phone" placeholder="WHATSAPP" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
+                            <input type="text" id="name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none">
+                            <input type="text" id="city" placeholder="VILLE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none">
+                            <input type="tel" id="phone" placeholder="NUMÉRO WHATSAPP (ex: 22890...)" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none">
                         </div>
-                        <button onclick="handleRegister()" class="bg-[#FFD700] text-black w-full py-5 font-black uppercase text-xs tracking-widest hover:brightness-110 transition">Envoyer au Lab</button>
+                        <button onclick="handleRegister()" class="bg-[#FFD700] text-black w-full py-5 font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition">Envoyer au Lab</button>
                     </div>`;
             } else if (viewName === 'success') {
                 container.innerHTML = `
                     <div class="text-center">
                         <h2 class="text-4xl font-black accent-color">C'EST REÇU !</h2>
-                        <p class="mt-4 text-gray-500 text-sm">Le staff a été notifié. Tu recevras une réponse sous peu.</p>
-                        <button onclick="showView('register')" class="mt-8 text-[10px] uppercase tracking-widest text-white/30">Retour</button>
+                        <p class="mt-4 text-gray-500 text-sm italic">Analyse du profil en cours...</p>
+                        <button onclick="showView('register')" class="mt-8 text-[10px] uppercase tracking-widest text-white/30 hover:text-white">Retour</button>
                     </div>`;
             }
         }
@@ -84,38 +82,49 @@
             const phone = document.getElementById('phone').value;
 
             if(name && city && phone) {
-                db.ref('registrations').push({ 
-                    name, 
-                    city, 
-                    phone, 
-                    timestamp: Date.now() 
-                });
+                db.ref('registrations').push({ name, city, phone, date: Date.now() });
                 showView('success');
-            } else {
-                alert("Remplis tous les champs !");
-            }
+            } else { alert("Champs obligatoires !"); }
         }
 
         function promptAdmin() {
-            const pass = prompt("Accès Staff VIBZ LAB :");
-            if (pass === "1234") {
+            const pass = prompt("CODE STAFF VIBZ LAB :");
+            if (pass === "1120") { // Nouveau mot de passe
                 document.getElementById('admin-dot').style.display = 'none';
                 showView('admin');
                 db.ref('registrations').once('value', (s) => renderAdmin(s.val()));
+            } else { alert("Code incorrect."); }
+        }
+
+        function deleteArtist(artistId) {
+            if(confirm("Supprimer cet artiste de la liste ?")) {
+                db.ref('registrations/' + artistId).remove();
             }
         }
 
         function renderAdmin(data) {
             const container = document.getElementById('main-content');
-            let html = '<h2 class="text-xl font-bold mb-6 accent-color uppercase tracking-tighter">Candidatures (Staff Only)</h2>';
+            let html = '<div class="flex justify-between items-center mb-6"><h2 class="text-xl font-black accent-color uppercase">Candidatures</h2><button onclick="showView(\'register\')" class="text-[10px] text-white/20 uppercase font-bold">X</button></div>';
+            
             if (data) {
-                Object.values(data).reverse().forEach(reg => {
-                    html += `<div class="border-b border-zinc-800 py-4"><p class="font-bold text-white">${reg.name}</p><p class="text-xs text-zinc-500 uppercase">${reg.city} • ${reg.phone}</p></div>`;
+                Object.keys(data).reverse().forEach(id => {
+                    const reg = data[id];
+                    html += `
+                    <div class="border-b border-zinc-800 py-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-black text-lg text-white uppercase italic leading-tight">${reg.name}</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">${reg.city}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-green-600 p-2 text-[10px] font-bold uppercase rounded hover:bg-green-500">WhatsApp</a>
+                                <button onclick="deleteArtist('${id}')" class="bg-red-900/50 p-2 text-[10px] font-bold uppercase rounded hover:bg-red-600 text-red-200">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>`;
                 });
-            } else {
-                html += '<p class="text-zinc-600 italic">Aucune inscription pour le moment.</p>';
-            }
-            container.innerHTML = `<div class="w-full">${html}<button onclick="showView('register')" class="mt-10 text-[10px] opacity-20 uppercase tracking-widest hover:opacity-100 transition">Quitter la session</button></div>`;
+            } else { html += '<p class="text-zinc-700 italic py-10 text-center">Aucun dossier en attente.</p>'; }
+            container.innerHTML = `<div class="w-full animate-fade-in">${html}</div>`;
         }
 
         showView('register');
