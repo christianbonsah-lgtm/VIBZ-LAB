@@ -6,7 +6,6 @@
     <title>VIBZ LAB | Official Tour</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Bibliothèques pour le PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -41,7 +40,6 @@
         .input-premium:focus {
             background: rgba(212, 175, 55, 0.05);
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
             outline: none;
         }
 
@@ -50,6 +48,7 @@
             transition: all 0.2s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.02);
+            user-select: none;
         }
 
         .city-chip.active {
@@ -57,7 +56,6 @@
             color: black;
             border-color: var(--gold);
             font-weight: 800;
-            transform: scale(1.05);
         }
 
         .btn-main {
@@ -66,53 +64,47 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.3s ease;
+            transition: all 0.3s active;
         }
 
-        .btn-main:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .gold-glow {
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        .btn-main:active {
+            transform: scale(0.98);
         }
 
         .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Navigation -->
     <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3">
+            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
                 <i class="fas fa-bolt text-black text-xl"></i>
             </div>
             <span class="font-extrabold text-2xl tracking-tighter uppercase italic">Vibz<span class="text-[#D4AF37]">Lab</span></span>
         </div>
-        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37] transition-colors">
-            Espace Admin
+        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37] p-2">
+            Admin
         </button>
     </nav>
 
     <main class="max-w-xl mx-auto px-6 py-4">
         
-        <!-- Vue Inscription -->
+        <!-- SECTION ARTISTE -->
         <section id="view-artist" class="animate-fade-in">
             <header class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold uppercase italic mb-2">Tournée <span class="text-[#D4AF37] gold-glow">Vibz</span></h1>
+                <h1 class="text-4xl font-extrabold uppercase italic mb-2">Tournée <span class="text-[#D4AF37]">Vibz</span></h1>
                 <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">L'excellence artistique au Togo</p>
             </header>
 
-            <div class="glass-card p-6 md:p-8 rounded-[2rem] shadow-2xl">
+            <div class="glass-card p-6 md:p-8 rounded-[2rem]">
                 <form id="registrationForm" class="space-y-6">
                     <div class="space-y-2">
                         <label class="text-[10px] uppercase font-black text-white/40 ml-1">Nom de scène</label>
@@ -123,13 +115,13 @@
                     <div class="space-y-2">
                         <label class="text-[10px] uppercase font-black text-white/40 ml-1">Ville étape</label>
                         <div class="flex flex-wrap gap-2" id="cityChipsContainer">
-                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sotouboua">Sotouboua</button>
-                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sokodé">Sokodé</button>
-                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Kara">Kara</button>
-                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Mango">Mango</button>
-                            <button type="button" class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Dapaong">Dapaong</button>
+                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sotouboua">Sotouboua</div>
+                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sokodé">Sokodé</div>
+                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Kara">Kara</div>
+                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Mango">Mango</div>
+                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Dapaong">Dapaong</div>
                         </div>
-                        <input type="hidden" id="selectedCityInput" required>
+                        <input type="hidden" id="selectedCityInput">
                     </div>
 
                     <div class="space-y-2">
@@ -148,7 +140,7 @@
             </div>
         </section>
 
-        <!-- Vue Admin (Candidatures) -->
+        <!-- SECTION ADMIN -->
         <section id="view-admin" class="hidden animate-fade-in">
             <div class="flex justify-between items-center mb-8">
                 <div>
@@ -165,34 +157,32 @@
                 </div>
             </div>
 
-            <div id="candidatesList" class="space-y-3">
-                <!-- Rempli par JS -->
-            </div>
+            <div id="candidatesList" class="space-y-3"></div>
         </section>
     </main>
 
-    <!-- Modal Login -->
-    <div id="loginModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-6 backdrop-blur-sm">
+    <!-- Modal Login Admin -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-6 backdrop-blur-md">
         <div class="glass-card p-8 rounded-[2rem] w-full max-w-xs text-center">
-            <h4 class="text-[10px] font-black uppercase text-white/40 mb-6 tracking-widest">Accès Sécurisé</h4>
+            <h4 class="text-[10px] font-black uppercase text-white/40 mb-6 tracking-widest">Code d'accès</h4>
             <input type="password" id="adminPass" maxlength="4" placeholder="••••" 
-                class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-6 text-[#D4AF37]">
+                class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-8 text-[#D4AF37]">
             <div class="grid grid-cols-2 gap-3">
-                <button id="cancelLoginBtn" class="text-white/20 text-[10px] font-bold uppercase">Annuler</button>
-                <button id="confirmLoginBtn" class="btn-main py-3 rounded-lg text-xs">Entrer</button>
+                <button id="cancelLoginBtn" class="text-white/20 text-[10px] font-bold uppercase py-2">Fermer</button>
+                <button id="confirmLoginBtn" class="btn-main py-3 rounded-lg text-xs">Valider</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Succès -->
     <div id="successModal" class="hidden fixed inset-0 bg-black/98 flex items-center justify-center z-50 p-6">
-        <div class="text-center space-y-6">
-            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center">
+        <div class="text-center space-y-6 animate-fade-in">
+            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]">
                 <i class="fas fa-check text-3xl text-black"></i>
             </div>
-            <h3 class="text-3xl font-black uppercase italic">Inscription Réussie</h3>
-            <p class="text-white/40 text-sm">Tu fais désormais partie de l'aventure Vibz Lab.</p>
-            <button onclick="window.location.reload()" class="btn-main px-10 py-3 rounded-full text-xs">Terminer</button>
+            <h3 class="text-3xl font-black uppercase italic">Bienvenue dans Vibz Lab</h3>
+            <p class="text-white/40 text-sm">Ton inscription a été enregistrée avec succès.</p>
+            <button id="closeSuccessBtn" class="btn-main px-10 py-3 rounded-full text-xs">Fermer</button>
         </div>
     </div>
 
@@ -201,55 +191,65 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Initialisation
+        // CONFIG
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-v2';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-final';
 
-        let allCandidates = [];
         let user = null;
 
-        // AUTHENTICATION
-        const handleAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
+        // AUTH INITIALIZATION
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { console.error("Auth error:", e); }
         };
 
         onAuthStateChanged(auth, (u) => {
             user = u;
+            console.log("User ready:", u?.uid);
         });
 
-        handleAuth();
+        initAuth();
 
-        // UI : Sélecteur de ville
-        const chips = document.querySelectorAll('.city-chip');
-        chips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                chips.forEach(c => c.classList.remove('active'));
+        // UI ACTIONS : Sélecteur de ville
+        const cityChips = document.querySelectorAll('.city-chip');
+        const cityInput = document.getElementById('selectedCityInput');
+        
+        cityChips.forEach(chip => {
+            chip.addEventListener('click', (e) => {
+                e.preventDefault();
+                cityChips.forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
-                document.getElementById('selectedCityInput').value = chip.dataset.city;
+                cityInput.value = chip.getAttribute('data-city');
             });
         });
 
-        // FORMULAIRE : Soumission
-        document.getElementById('registrationForm').onsubmit = async (e) => {
+        // FORMULAIRE : Inscription
+        const regForm = document.getElementById('registrationForm');
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!user) return;
-
-            const city = document.getElementById('selectedCityInput').value;
+            
+            const city = cityInput.value;
             if (!city) {
-                alert("Veuillez sélectionner une ville étape !");
+                alert("Erreur: Choisis une ville étape !");
+                return;
+            }
+
+            if (!user) {
+                alert("Connexion en cours, réessaie dans 2 secondes...");
                 return;
             }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "PATIENTEZ...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi...';
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
@@ -262,96 +262,88 @@
             } catch (err) {
                 console.error(err);
                 btn.disabled = false;
-                btn.innerText = "ERREUR - RÉESSAYER";
+                btn.innerText = "Réessayer";
+                alert("Une erreur est survenue lors de l'envoi.");
             }
-        };
+        });
 
-        // ADMIN : Gestion de l'accès
-        document.getElementById('admin-trigger').onclick = () => {
-            document.getElementById('loginModal').classList.remove('hidden');
-        };
+        // MODAL SUCCÈS
+        document.getElementById('closeSuccessBtn').onclick = () => location.reload();
 
-        document.getElementById('cancelLoginBtn').onclick = () => {
-            document.getElementById('loginModal').classList.add('hidden');
-        };
+        // ADMIN : Accès
+        const loginModal = document.getElementById('loginModal');
+        document.getElementById('admin-trigger').onclick = () => loginModal.classList.remove('hidden');
+        document.getElementById('cancelLoginBtn').onclick = () => loginModal.classList.add('hidden');
 
         document.getElementById('confirmLoginBtn').onclick = () => {
             const pass = document.getElementById('adminPass').value;
-            if (pass === "2024" || pass === "228") {
-                document.getElementById('loginModal').classList.add('hidden');
+            if (pass === "228" || pass === "2024") {
+                loginModal.classList.add('hidden');
                 document.getElementById('view-artist').classList.add('hidden');
                 document.getElementById('view-admin').classList.remove('hidden');
-                startDataListener();
+                startAdminListener();
             } else {
-                document.getElementById('adminPass').value = '';
-                document.getElementById('adminPass').placeholder = "FAUX";
+                document.getElementById('adminPass').value = "";
+                document.getElementById('adminPass').placeholder = "CODE FAUX";
             }
         };
 
-        document.getElementById('exitAdminBtn').onclick = () => {
-            location.reload();
-        };
+        document.getElementById('exitAdminBtn').onclick = () => location.reload();
 
-        // ADMIN : Listener de données
-        function startDataListener() {
+        // ADMIN : Liste des candidats
+        let allData = [];
+        function startAdminListener() {
             if (!user) return;
             const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('createdAt', 'desc'));
             
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('candidatesList');
                 list.innerHTML = '';
-                allCandidates = [];
+                allData = [];
 
                 document.getElementById('statsLabel').innerText = `${snapshot.size} Artistes inscrits`;
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    allCandidates.push(data);
+                    allData.push(data);
                     
-                    const item = document.createElement('div');
-                    item.className = "glass-card p-4 rounded-2xl flex items-center justify-between animate-fade-in";
-                    item.innerHTML = `
-                        <div class="overflow-hidden">
-                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city || 'Ville'}</p>
-                            <h4 class="font-bold truncate">${data.name}</h4>
+                    const el = document.createElement('div');
+                    el.className = "glass-card p-4 rounded-2xl flex items-center justify-between";
+                    el.innerHTML = `
+                        <div class="overflow-hidden pr-2">
+                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city}</p>
+                            <h4 class="font-bold truncate text-sm">${data.name}</h4>
                         </div>
                         <div class="flex gap-2">
-                            <a href="tel:+228${data.phone}" class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-white/40">
-                                <i class="fas fa-phone-alt"></i>
+                            <a href="tel:+228${data.phone}" class="w-9 h-9 bg-white/5 rounded-lg flex items-center justify-center text-white/40">
+                                <i class="fas fa-phone-alt text-xs"></i>
                             </a>
-                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-10 h-10 bg-green-500/20 text-green-500 rounded-xl flex items-center justify-center">
-                                <i class="fab fa-whatsapp"></i>
+                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-9 h-9 bg-green-500/10 text-green-500 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-whatsapp text-xs"></i>
                             </a>
                         </div>
                     `;
-                    list.appendChild(item);
+                    list.appendChild(el);
                 });
-            }, (error) => {
-                console.error("Firestore error:", error);
-            });
+            }, (error) => console.log("Stream error", error));
         }
 
-        // PDF GENERATION
+        // EXPORT PDF
         document.getElementById('downloadPdfBtn').onclick = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            doc.text("VIBZ LAB - LISTE DES CANDIDATS", 14, 20);
             
-            doc.setFontSize(20);
-            doc.setTextColor(212, 175, 55);
-            doc.text("LISTE DES CANDIDATS - VIBZ LAB", 14, 20);
-            
-            const rows = allCandidates.map(c => [c.name, c.city, c.phone]);
-            
+            const rows = allData.map(c => [c.name, c.city, `+228 ${c.phone}`]);
             doc.autoTable({
-                head: [['Artiste', 'Ville', 'Contact']],
+                head: [['Artiste', 'Ville', 'WhatsApp']],
                 body: rows,
-                startY: 30,
-                headStyles: { fillColor: [212, 175, 55], textColor: [0, 0, 0] },
-                styles: { fontSize: 10 }
+                startY: 25,
+                headStyles: { fillColor: [212, 175, 55] }
             });
-            
-            doc.save(`VibzLab_Tour_Candidats.pdf`);
+            doc.save('VibzLab_Tournee.pdf');
         };
+
     </script>
 </body>
 </html>
