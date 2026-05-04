@@ -3,120 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBZ LAB - Admin & Registration</title>
+    <title>VIBZ LAB - Real-Time</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
+        body { background-color: #050505; color: white; font-family: sans-serif; }
         .accent-color { color: #FFD700; }
-        .bg-accent { background-color: #FFD700; }
-        input:focus { outline: 2px solid #FFD700; border: none; }
+        .notification-dot { position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-6">
+<body class="min-h-screen flex flex-col items-center p-6">
 
-    <!-- Header / Logo -->
     <header class="w-full text-center py-10 cursor-pointer" onclick="showView('register')">
         <h1 class="text-5xl font-black tracking-tighter italic">VIBZ <span class="accent-color">LAB</span></h1>
         <p class="text-[10px] uppercase tracking-[0.5em] text-gray-500 mt-2">Future of Sounds • 2026</p>
     </header>
 
-    <!-- Zone de Contenu Dynamique -->
-    <main id="main-content" class="w-full max-w-lg flex-grow flex flex-col justify-center">
-        <!-- Les vues seront injectées ici par le script -->
-    </main>
+    <main id="main-content" class="w-full max-w-lg flex-grow flex flex-col justify-center"></main>
 
-    <!-- Footer & Lien Admin Secret -->
     <footer class="w-full text-center py-10">
-        <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-4">Design for Togo</p>
-        <button onclick="promptAdmin()" class="text-[9px] text-zinc-800 hover:text-zinc-500 transition">Accès Staff</button>
+        <div class="relative inline-block">
+            <div id="admin-dot" class="notification-dot"></div>
+            <button onclick="promptAdmin()" class="text-[9px] text-zinc-800 hover:text-zinc-500 transition uppercase tracking-widest">Accès Staff VIBZ LAB</button>
+        </div>
     </footer>
 
     <script>
-        // Simulation de base de données locale
-        let registrations = [
-            { name: "Sample Artist", city: "Sokodé", phone: "+228 00000000" }
-        ];
+        // CONFIGURATION AVEC VOS CLÉS RÉELLES
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaKG3bQcenE4yyGPzHoUEwr9lJ6OAssXQ",
+            authDomain: "vibz-lab.firebaseapp.com",
+            databaseURL: "https://vibz-lab-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "vibz-lab",
+            storageBucket: "vibz-lab.firebasestorage.app",
+            messagingSenderId: "39630575995",
+            appId: "1:39630575995:web:da457e123e2cb54274c5de"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let currentView = 'register';
 
-        // Navigation entre les vues
+        // ÉCOUTE DES NOTIFICATIONS
+        db.ref('registrations').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && currentView !== 'admin') {
+                document.getElementById('admin-dot').style.display = 'block';
+            }
+            if (currentView === 'admin') renderAdmin(data);
+        });
+
         function showView(viewName) {
+            currentView = viewName;
             const container = document.getElementById('main-content');
-            
             if (viewName === 'register') {
                 container.innerHTML = `
                     <div class="space-y-6">
-                        <h2 class="text-2xl font-bold text-center underline decoration-yellow-500 underline-offset-8">INSCRIPTION</h2>
+                        <h2 class="text-2xl font-bold text-center underline decoration-yellow-500 underline-offset-8 uppercase">Inscription</h2>
                         <div class="space-y-4">
-                            <input type="text" id="reg-name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
-                            <input type="text" id="reg-city" placeholder="VILLE (Sotouboua, Kara, etc.)" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
-                            <input type="tel" id="reg-phone" placeholder="NUMÉRO WHATSAPP" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
+                            <input type="text" id="name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
+                            <input type="text" id="city" placeholder="VILLE" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
+                            <input type="tel" id="phone" placeholder="WHATSAPP" class="w-full p-4 bg-zinc-900 border border-zinc-800 text-sm rounded-none">
                         </div>
-                        <button onclick="handleRegister()" class="bg-accent text-black w-full py-5 font-black uppercase tracking-[0.3em] text-xs hover:brightness-110 transition">
-                            Envoyer au Lab
-                        </button>
-                    </div>
-                `;
-            } 
-            
-            else if (viewName === 'success') {
+                        <button onclick="handleRegister()" class="bg-[#FFD700] text-black w-full py-5 font-black uppercase text-xs tracking-widest hover:brightness-110 transition">Envoyer au Lab</button>
+                    </div>`;
+            } else if (viewName === 'success') {
                 container.innerHTML = `
-                    <div class="text-center space-y-4">
-                        <h2 class="text-4xl font-black accent-color uppercase">C'est Reçu !</h2>
-                        <p class="text-gray-400 text-sm">Le Lab analyse ton profil. Tu recevras une réponse par WhatsApp.</p>
-                        <button onclick="showView('register')" class="mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-white/50 hover:text-white">
-                            > Retour
-                        </button>
-                    </div>
-                `;
-            }
-
-            else if (viewName === 'admin') {
-                let listHtml = registrations.map(reg => `
-                    <div class="border-b border-zinc-800 py-4">
-                        <p class="font-bold text-white">${reg.name}</p>
-                        <p class="text-xs text-gray-500 uppercase">${reg.city} • ${reg.phone}</p>
-                    </div>
-                `).join('');
-
-                container.innerHTML = `
-                    <div class="space-y-6">
-                        <div class="flex justify-between items-end border-b border-yellow-500 pb-2">
-                            <h2 class="text-2xl font-black uppercase">Candidatures</h2>
-                            <span class="text-xs font-mono accent-color">${registrations.length} Artistes</span>
-                        </div>
-                        <div class="max-h-96 overflow-y-auto">
-                            ${registrations.length === 0 ? '<p class="text-zinc-600 italic">Aucun inscrit pour le moment.</p>' : listHtml}
-                        </div>
-                        <button onclick="showView('register')" class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white">Fermer la session</button>
-                    </div>
-                `;
+                    <div class="text-center">
+                        <h2 class="text-4xl font-black accent-color">C'EST REÇU !</h2>
+                        <p class="mt-4 text-gray-500 text-sm">Le staff a été notifié. Tu recevras une réponse sous peu.</p>
+                        <button onclick="showView('register')" class="mt-8 text-[10px] uppercase tracking-widest text-white/30">Retour</button>
+                    </div>`;
             }
         }
 
-        // Logique d'inscription
         function handleRegister() {
-            const name = document.getElementById('reg-name').value;
-            const city = document.getElementById('reg-city').value;
-            const phone = document.getElementById('reg-phone').value;
+            const name = document.getElementById('name').value;
+            const city = document.getElementById('city').value;
+            const phone = document.getElementById('phone').value;
 
             if(name && city && phone) {
-                registrations.push({ name, city, phone });
+                db.ref('registrations').push({ 
+                    name, 
+                    city, 
+                    phone, 
+                    timestamp: Date.now() 
+                });
                 showView('success');
             } else {
-                alert("Veuillez remplir tous les champs.");
+                alert("Remplis tous les champs !");
             }
         }
 
-        // Logique Admin (Mot de passe)
         function promptAdmin() {
-            const pass = prompt("Accès restreint au Staff VIBZ LAB. Entrez le code :");
-            if (pass === "1234") { // Vous pouvez changer ce code
+            const pass = prompt("Accès Staff VIBZ LAB :");
+            if (pass === "1234") {
+                document.getElementById('admin-dot').style.display = 'none';
                 showView('admin');
-            } else {
-                alert("Accès refusé.");
+                db.ref('registrations').once('value', (s) => renderAdmin(s.val()));
             }
         }
 
-        // Initialisation au chargement
+        function renderAdmin(data) {
+            const container = document.getElementById('main-content');
+            let html = '<h2 class="text-xl font-bold mb-6 accent-color uppercase tracking-tighter">Candidatures (Staff Only)</h2>';
+            if (data) {
+                Object.values(data).reverse().forEach(reg => {
+                    html += `<div class="border-b border-zinc-800 py-4"><p class="font-bold text-white">${reg.name}</p><p class="text-xs text-zinc-500 uppercase">${reg.city} • ${reg.phone}</p></div>`;
+                });
+            } else {
+                html += '<p class="text-zinc-600 italic">Aucune inscription pour le moment.</p>';
+            }
+            container.innerHTML = `<div class="w-full">${html}<button onclick="showView('register')" class="mt-10 text-[10px] opacity-20 uppercase tracking-widest hover:opacity-100 transition">Quitter la session</button></div>`;
+        }
+
         showView('register');
     </script>
 </body>
