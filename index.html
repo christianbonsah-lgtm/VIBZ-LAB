@@ -1,312 +1,305 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIBZ LAB | Inscription</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  onSnapshot, 
+  serverTimestamp 
+} from 'firebase/firestore';
+import { 
+  getAuth, 
+  signInAnonymously, 
+  signInWithCustomToken, 
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { 
+  User, 
+  MapPin, 
+  CheckCircle2, 
+  Fingerprint, 
+  X, 
+  MessageCircle,
+  Loader2,
+  Lock,
+  Phone,
+  ArrowRight,
+  Mic2
+} from 'lucide-react';
+
+// Configuration Firebase
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-2026';
+
+/**
+ * Application VIBZ LAB Togo 2026
+ * Interface d'inscription pour les artistes et dashboard pour le staff.
+ */
+export default function App() {
+  const [view, setView] = useState('register');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+  const [formData, setFormData] = useState({ name: '', city: '', phone: '' });
+  const [adminCode, setAdminCode] = useState('');
+
+  // Initialisation Authentification (Règle 3)
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Auth error:", err);
+      }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
+
+  // Écoute des données en temps réel pour le staff (Règle 1 & 2)
+  useEffect(() => {
+    if (!user || view !== 'admin') return;
+
+    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
+    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Tri manuel (Règle 2)
+      docs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      setRegistrations(docs);
+    }, (err) => {
+      console.error("Firestore error:", err);
+    });
+
+    return () => unsubscribe();
+  }, [user, view]);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.city || !formData.phone) {
+      setError("Veuillez remplir tous les champs.");
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
+        ...formData,
+        createdAt: serverTimestamp()
+      });
+      setView('success');
+      setFormData({ name: '', city: '', phone: '' });
+    } catch (err) {
+      setError("Une erreur est survenue. Réessayez.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdminAuth = (val) => {
+    setAdminCode(val);
+    if (val === '228') { 
+      setView('admin');
+      setShowAuthModal(false);
+      setAdminCode('');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white font-sans antialiased">
+      <div className="max-w-md mx-auto px-6 py-8 min-h-screen flex flex-col">
         
-        :root { --gold: #D4AF37; --bg: #050505; }
-        
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background-color: var(--bg); 
-            color: white; 
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-            touch-action: manipulation;
-        }
+        {/* Header */}
+        <header className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-3xl font-black tracking-tighter italic uppercase">
+              VIBZ<span className="text-[#FFD700]">LAB</span>
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold">Lomé • Togo 2026</p>
+          </div>
+          
+          <button 
+            onClick={() => setShowAuthModal(true)}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#FFD700]/20 transition-all"
+          >
+            <Fingerprint size={18} className="text-[#FFD700]" />
+          </button>
+        </header>
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-        }
+        {/* Vue Inscription */}
+        {view === 'register' && (
+          <main className="flex-1">
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-[-30px] right-[-30px] opacity-[0.03]">
+                <Mic2 size={160} />
+              </div>
 
-        .neo-input {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.2s ease;
-        }
-
-        .neo-input:focus {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.05);
-            outline: none;
-        }
-
-        .gold-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
-            color: black;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-        
-        .hide { display: none !important; }
-
-        /* Animation de clic pour feedback visuel */
-        .btn-active:active { transform: scale(0.96); opacity: 0.8; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Navigation -->
-    <nav class="p-6 flex justify-between items-center max-w-lg mx-auto w-full">
-        <button id="nav-logo" class="text-xl font-bold tracking-tighter uppercase italic outline-none cursor-pointer">
-            VIBZ<span class="text-[#D4AF37]">LAB</span>
-        </button>
-        <button id="admin-trigger" class="text-white/20 hover:text-[#D4AF37] transition-colors p-2 cursor-pointer">
-            <i class="fas fa-fingerprint text-xl"></i>
-        </button>
-    </nav>
-
-    <main class="flex-1 max-w-md mx-auto w-full px-6 pb-12">
-        
-        <!-- SECTION FORMULAIRE -->
-        <section id="view-register" class="animate-fade">
-            <div class="mb-8 mt-4 text-center">
-                <h2 class="text-3xl font-bold uppercase italic tracking-tighter">Tournée <span class="text-[#D4AF37]">Togo 2026</span></h2>
-                <p class="text-white/40 text-[10px] uppercase tracking-[0.4em] mt-2 font-medium">Inscription Artiste</p>
-            </div>
-
-            <div class="glass-card p-8 space-y-6">
-                <div class="space-y-2">
-                    <label class="text-[10px] uppercase tracking-widest text-white/50 ml-1">Nom d'Artiste</label>
-                    <input type="text" id="artist-name" class="neo-input w-full p-4 rounded-xl font-bold" placeholder="Votre nom de scène">
+              <div className="relative z-10 space-y-8">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight">Inscription Artiste</h2>
+                  <p className="text-white/40 text-xs mt-1 uppercase tracking-widest font-medium">Rejoins la révolution musicale</p>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] uppercase tracking-widest text-white/50 ml-1">Ville</label>
-                    <input type="text" id="artist-city" class="neo-input w-full p-4 rounded-xl font-bold" placeholder="Ex: Lomé, Kara...">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] uppercase tracking-widest text-white/50 ml-1">WhatsApp</label>
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[#D4AF37]">+228</span>
-                        <input type="tel" id="artist-phone" maxlength="8" class="neo-input w-full p-4 pl-14 rounded-xl font-bold tracking-widest" placeholder="00000000">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                      <input 
+                        type="text"
+                        placeholder="Nom d'artiste"
+                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
+                        value={formData.name}
+                        onChange={e => setFormData({...formData, name: e.target.value})}
+                      />
                     </div>
-                </div>
 
-                <button id="submit-btn" class="gold-gradient w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-lg shadow-gold/20 btn-active transition-all mt-4">
-                    Valider Inscription
-                </button>
-                
-                <p id="msg-error" class="text-center text-[10px] font-bold text-red-400 hide uppercase bg-red-400/10 py-3 rounded-lg border border-red-400/20"></p>
-            </div>
-        </section>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                      <input 
+                        type="text"
+                        placeholder="Ville"
+                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
+                        value={formData.city}
+                        onChange={e => setFormData({...formData, city: e.target.value})}
+                      />
+                    </div>
 
-        <!-- SECTION LISTE ADMIN -->
-        <section id="view-admin" class="hide animate-fade">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold italic uppercase tracking-tighter">Candidats</h2>
-                <button id="exit-admin" class="text-[10px] bg-white/5 px-4 py-2 rounded-full uppercase font-bold text-white/60 btn-active cursor-pointer">Fermer</button>
-            </div>
-            
-            <div id="stats" class="mb-6 px-2">
-                <p class="text-[10px] text-[#D4AF37] font-bold uppercase tracking-[0.2em]" id="count-label">Chargement...</p>
-            </div>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                      <input 
+                        type="tel"
+                        placeholder="WhatsApp (ex: 90000000)"
+                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
+                        value={formData.phone}
+                        onChange={e => setFormData({...formData, phone: e.target.value})}
+                      />
+                    </div>
+                  </div>
 
-            <div id="admin-list" class="space-y-4">
-                <!-- Artistes chargés ici -->
-            </div>
-        </section>
+                  {error && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest">{error}</p>}
 
-    </main>
-
-    <!-- AUTH MODAL -->
-    <div id="modal-auth" class="fixed inset-0 bg-black/95 z-50 hide flex items-center justify-center p-6 backdrop-blur-md">
-        <div class="glass-card p-8 w-full max-w-xs text-center">
-            <p class="text-[10px] uppercase tracking-widest text-white/40 mb-6 font-bold">Code Staff</p>
-            <input type="password" id="admin-code" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center outline-none mb-8 font-bold tracking-[0.5em]" placeholder="•••">
-            <div class="space-y-3">
-                <button id="auth-confirm" class="gold-gradient w-full py-4 rounded-xl font-bold text-xs uppercase btn-active">Vérifier</button>
-                <button id="auth-cancel" class="w-full py-2 text-[10px] text-white/30 uppercase font-bold tracking-widest btn-active">Retour</button>
+                  <button 
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-[#FFD700] hover:bg-[#FFE135] text-black font-black py-4 rounded-2xl uppercase tracking-widest text-xs shadow-lg shadow-[#FFD700]/10 flex items-center justify-center gap-2 transition-transform active:scale-95 disabled:opacity-50"
+                  >
+                    {loading ? <Loader2 className="animate-spin" /> : <>Soumettre <ArrowRight size={14} /></>}
+                  </button>
+                </form>
+              </div>
             </div>
-        </div>
-    </div>
+          </main>
+        )}
 
-    <!-- SUCCESS MODAL -->
-    <div id="modal-success" class="fixed inset-0 bg-black z-[100] hide flex items-center justify-center text-center p-8">
-        <div class="animate-fade">
-            <div class="w-20 h-20 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-gold/40">
-                <i class="fas fa-check text-3xl text-black"></i>
+        {/* Vue Succès */}
+        {view === 'success' && (
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-[#FFD700] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#FFD700]/20">
+              <CheckCircle2 size={36} className="text-black" />
             </div>
-            <h3 class="text-3xl font-bold uppercase italic mb-2 tracking-tighter">Envoyé !</h3>
-            <p class="text-white/40 text-[10px] font-bold tracking-widest uppercase leading-loose">
-                Ton profil est enregistré.<br>VIBZ LAB te contactera bientôt.
+            <h2 className="text-3xl font-black italic uppercase mb-2 tracking-tighter">C'est Reçu !</h2>
+            <p className="text-white/40 text-[11px] font-bold max-w-[260px] uppercase tracking-widest leading-relaxed">
+              Le Lab analyse ton profil. Tu recevras une réponse par WhatsApp.
             </p>
-            <button id="reset-form" class="mt-10 py-3 px-8 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37] hover:bg-white/5 transition-colors btn-active cursor-pointer">
-                Nouveau Profil
+            <button 
+              onClick={() => setView('register')}
+              className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-[#FFD700] hover:brightness-125"
+            >
+              Retour
             </button>
-        </div>
-    </div>
+          </div>
+        )}
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        {/* Vue Administration Staff */}
+        {view === 'admin' && (
+          <div className="flex-1">
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="text-xl font-black italic uppercase">Candidatures</h2>
+                <p className="text-[10px] font-bold text-[#FFD700] uppercase tracking-widest">{registrations.length} Artistes inscrits</p>
+              </div>
+              <button onClick={() => setView('register')} className="text-white/20 hover:text-white p-2">
+                <X size={20} />
+              </button>
+            </div>
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-2026';
-
-        let userLoaded = false;
-        let adminUnsubscribe = null;
-
-        // Navigation Instantanée
-        const showView = (viewId) => {
-            const views = ['view-register', 'view-admin', 'modal-auth', 'modal-success'];
-            views.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.add('hide');
-            });
-            const target = document.getElementById(viewId);
-            if(target) target.classList.remove('hide');
-        };
-
-        // Reset Formulaire
-        const clearForm = () => {
-            const fields = ['artist-name', 'artist-city', 'artist-phone'];
-            fields.forEach(id => document.getElementById(id).value = "");
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = false;
-            btn.innerText = "Valider Inscription";
-            document.getElementById('msg-error').classList.add('hide');
-        };
-
-        // Auth Init
-        const init = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (e) { console.error("Auth Error", e); }
-        };
-        onAuthStateChanged(auth, (u) => { if(u) userLoaded = true; });
-        init();
-
-        // --- GESTIONNAIRES D'EVENEMENTS (Robustes) ---
-
-        const setupListeners = () => {
-            // Inscription
-            document.getElementById('submit-btn').addEventListener('click', async () => {
-                const name = document.getElementById('artist-name').value.trim();
-                const city = document.getElementById('artist-city').value.trim();
-                const phone = document.getElementById('artist-phone').value.trim();
-                const err = document.getElementById('msg-error');
-
-                if(!name || !city || !phone) {
-                    err.innerText = "CHAMPS INCOMPLETS";
-                    err.classList.remove('hide');
-                    return;
-                }
-
-                if(!userLoaded) {
-                    err.innerText = "CONNEXION EN COURS...";
-                    err.classList.remove('hide');
-                    return;
-                }
-
-                try {
-                    const btn = document.getElementById('submit-btn');
-                    btn.disabled = true;
-                    btn.innerText = "ENVOI...";
-                    
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
-                        name, city, phone,
-                        createdAt: serverTimestamp()
-                    });
-
-                    showView('modal-success');
-                } catch (e) {
-                    const btn = document.getElementById('submit-btn');
-                    btn.disabled = false;
-                    btn.innerText = "Valider Inscription";
-                    err.innerText = "ERREUR DE RÉSEAU";
-                    err.classList.remove('hide');
-                }
-            });
-
-            // Retours
-            document.getElementById('reset-form').addEventListener('click', () => {
-                clearForm();
-                showView('view-register');
-            });
-
-            document.getElementById('nav-logo').addEventListener('click', () => {
-                clearForm();
-                showView('view-register');
-            });
-
-            document.getElementById('exit-admin').addEventListener('click', () => {
-                if(adminUnsubscribe) adminUnsubscribe();
-                showView('view-register');
-            });
-
-            // Admin Access
-            document.getElementById('admin-trigger').addEventListener('click', () => showView('modal-auth'));
-            document.getElementById('auth-cancel').addEventListener('click', () => showView('view-register'));
-            
-            document.getElementById('auth-confirm').addEventListener('click', () => {
-                const input = document.getElementById('admin-code');
-                const code = input.value;
-                if(code === "228") {
-                    input.value = "";
-                    showView('view-admin');
-                    loadList();
-                } else {
-                    input.value = "";
-                    const err = document.getElementById('msg-error');
-                    err.innerText = "CODE INCORRECT";
-                    err.classList.remove('hide');
-                    setTimeout(() => err.classList.add('hide'), 2000);
-                }
-            });
-        };
-
-        function loadList() {
-            const q = collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
-            adminUnsubscribe = onSnapshot(q, (snap) => {
-                const list = document.getElementById('admin-list');
-                const label = document.getElementById('count-label');
-                let items = [];
-                snap.forEach(d => items.push(d.data()));
-                
-                items.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-                label.innerText = `${items.length} CANDIDATS ENREGISTRÉS`;
-                list.innerHTML = items.map(art => `
-                    <div class="glass-card p-5 flex justify-between items-center animate-fade">
-                        <div>
-                            <p class="text-[8px] font-bold text-[#D4AF37] uppercase tracking-widest mb-1">${art.city}</p>
-                            <h4 class="text-lg font-bold uppercase italic leading-none">${art.name}</h4>
-                            <p class="text-white/30 text-[10px] mt-1 tracking-widest">+228 ${art.phone}</p>
-                        </div>
-                        <a href="https://wa.me/228${art.phone}" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#D4AF37]">
-                            <i class="fab fa-whatsapp text-xl"></i>
-                        </a>
+            <div className="space-y-3 pb-10">
+              {registrations.length === 0 ? (
+                <div className="text-center py-20 text-white/10 uppercase font-bold text-xs tracking-widest">Aucun inscrit</div>
+              ) : (
+                registrations.map((reg) => (
+                  <div key={reg.id} className="bg-white/[0.02] border border-white/5 p-5 rounded-3xl flex justify-between items-center group">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm uppercase">{reg.name}</h4>
+                      <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">{reg.city} • {reg.phone}</p>
                     </div>
-                `).join('');
-            }, (err) => console.error("Snapshot Error", err));
-        }
+                    <a 
+                      href={`https://wa.me/228${reg.phone}`} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="w-10 h-10 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-lg"
+                    >
+                      <MessageCircle size={18} />
+                    </a>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
 
-        // Lancement au chargement du DOM
-        window.addEventListener('DOMContentLoaded', setupListeners);
-    </script>
-</body>
-</html>
+        {/* Modal Auth Staff */}
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-8">
+            <div className="w-full max-w-xs space-y-8 text-center">
+              <div className="w-14 h-14 bg-white/5 rounded-3xl flex items-center justify-center mx-auto border border-white/10">
+                <Lock className="text-[#FFD700]" size={24} />
+              </div>
+              <div className="space-y-4">
+                <input 
+                  type="password"
+                  placeholder="CODE STAFF"
+                  autoFocus
+                  className="w-full bg-transparent border-b-2 border-white/10 text-center text-4xl font-black py-2 focus:border-[#FFD700] outline-none transition-all tracking-[0.4em]"
+                  value={adminCode}
+                  onChange={e => handleAdminAuth(e.target.value)}
+                />
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Accès restreint au Staff VIBZ LAB</p>
+              </div>
+              <button 
+                onClick={() => { setShowAuthModal(false); setAdminCode(''); }}
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
+
+        <footer className="py-10 text-center mt-auto border-t border-white/5">
+          <p className="text-[8px] uppercase font-black tracking-[0.6em] text-white/20">
+            Design for Togo &bull; Future of Sounds &bull; 2026
+          </p>
+        </footer>
+
+      </div>
+
+      <style>{`
+        body { background-color: black; overflow-x: hidden; }
+        ::selection { background: #FFD700; color: black; }
+        ::-webkit-scrollbar { width: 0; }
+      `}</style>
+    </div>
+  );
+}
