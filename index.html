@@ -17,6 +17,7 @@
             color: white; 
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         .glass-card {
@@ -52,16 +53,19 @@
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         
         .hide { display: none !important; }
+
+        /* Animation de clic pour feedback visuel */
+        .btn-active:active { transform: scale(0.96); opacity: 0.8; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Navigation -->
     <nav class="p-6 flex justify-between items-center max-w-lg mx-auto w-full">
-        <button id="nav-logo" class="text-xl font-bold tracking-tighter uppercase italic outline-none">
+        <button id="nav-logo" class="text-xl font-bold tracking-tighter uppercase italic outline-none cursor-pointer">
             VIBZ<span class="text-[#D4AF37]">LAB</span>
         </button>
-        <button id="admin-trigger" class="text-white/20 hover:text-[#D4AF37] transition-colors p-2">
+        <button id="admin-trigger" class="text-white/20 hover:text-[#D4AF37] transition-colors p-2 cursor-pointer">
             <i class="fas fa-fingerprint text-xl"></i>
         </button>
     </nav>
@@ -94,7 +98,7 @@
                     </div>
                 </div>
 
-                <button id="submit-btn" class="gold-gradient w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-lg shadow-gold/20 active:scale-95 transition-transform mt-4">
+                <button id="submit-btn" class="gold-gradient w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-lg shadow-gold/20 btn-active transition-all mt-4">
                     Valider Inscription
                 </button>
                 
@@ -106,7 +110,7 @@
         <section id="view-admin" class="hide animate-fade">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold italic uppercase tracking-tighter">Candidats</h2>
-                <button id="exit-admin" class="text-[10px] bg-white/5 px-4 py-2 rounded-full uppercase font-bold text-white/60">Fermer</button>
+                <button id="exit-admin" class="text-[10px] bg-white/5 px-4 py-2 rounded-full uppercase font-bold text-white/60 btn-active cursor-pointer">Fermer</button>
             </div>
             
             <div id="stats" class="mb-6 px-2">
@@ -126,8 +130,8 @@
             <p class="text-[10px] uppercase tracking-widest text-white/40 mb-6 font-bold">Code Staff</p>
             <input type="password" id="admin-code" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center outline-none mb-8 font-bold tracking-[0.5em]" placeholder="•••">
             <div class="space-y-3">
-                <button id="auth-confirm" class="gold-gradient w-full py-4 rounded-xl font-bold text-xs uppercase">Vérifier</button>
-                <button id="auth-cancel" class="w-full py-2 text-[10px] text-white/30 uppercase font-bold tracking-widest">Retour</button>
+                <button id="auth-confirm" class="gold-gradient w-full py-4 rounded-xl font-bold text-xs uppercase btn-active">Vérifier</button>
+                <button id="auth-cancel" class="w-full py-2 text-[10px] text-white/30 uppercase font-bold tracking-widest btn-active">Retour</button>
             </div>
         </div>
     </div>
@@ -142,7 +146,7 @@
             <p class="text-white/40 text-[10px] font-bold tracking-widest uppercase leading-loose">
                 Ton profil est enregistré.<br>VIBZ LAB te contactera bientôt.
             </p>
-            <button id="reset-form" class="mt-10 py-3 px-8 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37] hover:bg-white/5 transition-colors">
+            <button id="reset-form" class="mt-10 py-3 px-8 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37] hover:bg-white/5 transition-colors btn-active cursor-pointer">
                 Nouveau Profil
             </button>
         </div>
@@ -164,95 +168,115 @@
 
         // Navigation Instantanée
         const showView = (viewId) => {
-            ['view-register', 'view-admin', 'modal-auth', 'modal-success'].forEach(id => {
-                document.getElementById(id).classList.add('hide');
+            const views = ['view-register', 'view-admin', 'modal-auth', 'modal-success'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hide');
             });
-            if(viewId) document.getElementById(viewId).classList.remove('hide');
+            const target = document.getElementById(viewId);
+            if(target) target.classList.remove('hide');
         };
 
         // Reset Formulaire
         const clearForm = () => {
-            document.getElementById('artist-name').value = "";
-            document.getElementById('artist-city').value = "";
-            document.getElementById('artist-phone').value = "";
-            document.getElementById('submit-btn').disabled = false;
-            document.getElementById('submit-btn').innerText = "Valider Inscription";
+            const fields = ['artist-name', 'artist-city', 'artist-phone'];
+            fields.forEach(id => document.getElementById(id).value = "");
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = false;
+            btn.innerText = "Valider Inscription";
+            document.getElementById('msg-error').classList.add('hide');
         };
 
         // Auth Init
         const init = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { console.error("Auth Error", e); }
         };
         onAuthStateChanged(auth, (u) => { if(u) userLoaded = true; });
         init();
 
-        // Inscription
-        document.getElementById('submit-btn').onclick = async () => {
-            const name = document.getElementById('artist-name').value.trim();
-            const city = document.getElementById('artist-city').value.trim();
-            const phone = document.getElementById('artist-phone').value.trim();
-            const err = document.getElementById('msg-error');
+        // --- GESTIONNAIRES D'EVENEMENTS (Robustes) ---
 
-            if(!name || !city || !phone) {
-                err.innerText = "CHAMPS INCOMPLETS";
-                err.classList.remove('hide');
-                return;
-            }
+        const setupListeners = () => {
+            // Inscription
+            document.getElementById('submit-btn').addEventListener('click', async () => {
+                const name = document.getElementById('artist-name').value.trim();
+                const city = document.getElementById('artist-city').value.trim();
+                const phone = document.getElementById('artist-phone').value.trim();
+                const err = document.getElementById('msg-error');
 
-            if(!userLoaded) return;
+                if(!name || !city || !phone) {
+                    err.innerText = "CHAMPS INCOMPLETS";
+                    err.classList.remove('hide');
+                    return;
+                }
 
-            try {
-                document.getElementById('submit-btn').disabled = true;
-                document.getElementById('submit-btn').innerText = "ENVOI...";
-                
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
-                    name, city, phone,
-                    createdAt: serverTimestamp()
-                });
+                if(!userLoaded) {
+                    err.innerText = "CONNEXION EN COURS...";
+                    err.classList.remove('hide');
+                    return;
+                }
 
-                showView('modal-success');
-            } catch (e) {
-                document.getElementById('submit-btn').disabled = false;
-                document.getElementById('submit-btn').innerText = "Valider Inscription";
-                err.innerText = "ERREUR DE CONNEXION";
-                err.classList.remove('hide');
-            }
-        };
+                try {
+                    const btn = document.getElementById('submit-btn');
+                    btn.disabled = true;
+                    btn.innerText = "ENVOI...";
+                    
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
+                        name, city, phone,
+                        createdAt: serverTimestamp()
+                    });
 
-        // Boutons de retour instantanés
-        document.getElementById('reset-form').onclick = () => {
-            clearForm();
-            showView('view-register');
-        };
+                    showView('modal-success');
+                } catch (e) {
+                    const btn = document.getElementById('submit-btn');
+                    btn.disabled = false;
+                    btn.innerText = "Valider Inscription";
+                    err.innerText = "ERREUR DE RÉSEAU";
+                    err.classList.remove('hide');
+                }
+            });
 
-        document.getElementById('nav-logo').onclick = () => {
-            clearForm();
-            showView('view-register');
-        };
+            // Retours
+            document.getElementById('reset-form').addEventListener('click', () => {
+                clearForm();
+                showView('view-register');
+            });
 
-        document.getElementById('exit-admin').onclick = () => {
-            if(adminUnsubscribe) adminUnsubscribe();
-            showView('view-register');
-        };
+            document.getElementById('nav-logo').addEventListener('click', () => {
+                clearForm();
+                showView('view-register');
+            });
 
-        // Accès Admin
-        document.getElementById('admin-trigger').onclick = () => showView('modal-auth');
-        document.getElementById('auth-cancel').onclick = () => showView('view-register');
-        
-        document.getElementById('auth-confirm').onclick = () => {
-            const code = document.getElementById('admin-code').value;
-            if(code === "228") {
-                document.getElementById('admin-code').value = "";
-                showView('view-admin');
-                loadList();
-            } else {
-                document.getElementById('admin-code').value = "";
-                alert("CODE INCORRECT");
-            }
+            document.getElementById('exit-admin').addEventListener('click', () => {
+                if(adminUnsubscribe) adminUnsubscribe();
+                showView('view-register');
+            });
+
+            // Admin Access
+            document.getElementById('admin-trigger').addEventListener('click', () => showView('modal-auth'));
+            document.getElementById('auth-cancel').addEventListener('click', () => showView('view-register'));
+            
+            document.getElementById('auth-confirm').addEventListener('click', () => {
+                const input = document.getElementById('admin-code');
+                const code = input.value;
+                if(code === "228") {
+                    input.value = "";
+                    showView('view-admin');
+                    loadList();
+                } else {
+                    input.value = "";
+                    const err = document.getElementById('msg-error');
+                    err.innerText = "CODE INCORRECT";
+                    err.classList.remove('hide');
+                    setTimeout(() => err.classList.add('hide'), 2000);
+                }
+            });
         };
 
         function loadList() {
@@ -278,8 +302,11 @@
                         </a>
                     </div>
                 `).join('');
-            }, (err) => console.error(err));
+            }, (err) => console.error("Snapshot Error", err));
         }
+
+        // Lancement au chargement du DOM
+        window.addEventListener('DOMContentLoaded', setupListeners);
     </script>
 </body>
 </html>
