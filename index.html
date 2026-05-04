@@ -1,305 +1,123 @@
-import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  onSnapshot, 
-  serverTimestamp 
-} from 'firebase/firestore';
-import { 
-  getAuth, 
-  signInAnonymously, 
-  signInWithCustomToken, 
-  onAuthStateChanged 
-} from 'firebase/auth';
-import { 
-  User, 
-  MapPin, 
-  CheckCircle2, 
-  Fingerprint, 
-  X, 
-  MessageCircle,
-  Loader2,
-  Lock,
-  Phone,
-  ArrowRight,
-  Mic2
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBZ LAB - Admin & Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .accent-color { color: #FFD700; }
+        .bg-accent { background-color: #FFD700; }
+        input:focus { outline: 2px solid #FFD700; border: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-6">
 
-// Configuration Firebase
-const firebaseConfig = JSON.parse(__firebase_config);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-2026';
+    <!-- Header / Logo -->
+    <header class="w-full text-center py-10 cursor-pointer" onclick="showView('register')">
+        <h1 class="text-5xl font-black tracking-tighter italic">VIBZ <span class="accent-color">LAB</span></h1>
+        <p class="text-[10px] uppercase tracking-[0.5em] text-gray-500 mt-2">Future of Sounds • 2026</p>
+    </header>
 
-/**
- * Application VIBZ LAB Togo 2026
- * Interface d'inscription pour les artistes et dashboard pour le staff.
- */
-export default function App() {
-  const [view, setView] = useState('register');
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [user, setUser] = useState(null);
-  const [registrations, setRegistrations] = useState([]);
-  const [formData, setFormData] = useState({ name: '', city: '', phone: '' });
-  const [adminCode, setAdminCode] = useState('');
+    <!-- Zone de Contenu Dynamique -->
+    <main id="main-content" class="w-full max-w-lg flex-grow flex flex-col justify-center">
+        <!-- Les vues seront injectées ici par le script -->
+    </main>
 
-  // Initialisation Authentification (Règle 3)
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
+    <!-- Footer & Lien Admin Secret -->
+    <footer class="w-full text-center py-10">
+        <p class="text-[10px] text-gray-700 uppercase tracking-widest mb-4">Design for Togo</p>
+        <button onclick="promptAdmin()" class="text-[9px] text-zinc-800 hover:text-zinc-500 transition">Accès Staff</button>
+    </footer>
+
+    <script>
+        // Simulation de base de données locale
+        let registrations = [
+            { name: "Sample Artist", city: "Sokodé", phone: "+228 00000000" }
+        ];
+
+        // Navigation entre les vues
+        function showView(viewName) {
+            const container = document.getElementById('main-content');
+            
+            if (viewName === 'register') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold text-center underline decoration-yellow-500 underline-offset-8">INSCRIPTION</h2>
+                        <div class="space-y-4">
+                            <input type="text" id="reg-name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
+                            <input type="text" id="reg-city" placeholder="VILLE (Sotouboua, Kara, etc.)" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
+                            <input type="tel" id="reg-phone" placeholder="NUMÉRO WHATSAPP" class="w-full p-4 bg-zinc-900 border border-zinc-800 rounded-none text-sm">
+                        </div>
+                        <button onclick="handleRegister()" class="bg-accent text-black w-full py-5 font-black uppercase tracking-[0.3em] text-xs hover:brightness-110 transition">
+                            Envoyer au Lab
+                        </button>
+                    </div>
+                `;
+            } 
+            
+            else if (viewName === 'success') {
+                container.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <h2 class="text-4xl font-black accent-color uppercase">C'est Reçu !</h2>
+                        <p class="text-gray-400 text-sm">Le Lab analyse ton profil. Tu recevras une réponse par WhatsApp.</p>
+                        <button onclick="showView('register')" class="mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-white/50 hover:text-white">
+                            > Retour
+                        </button>
+                    </div>
+                `;
+            }
+
+            else if (viewName === 'admin') {
+                let listHtml = registrations.map(reg => `
+                    <div class="border-b border-zinc-800 py-4">
+                        <p class="font-bold text-white">${reg.name}</p>
+                        <p class="text-xs text-gray-500 uppercase">${reg.city} • ${reg.phone}</p>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-end border-b border-yellow-500 pb-2">
+                            <h2 class="text-2xl font-black uppercase">Candidatures</h2>
+                            <span class="text-xs font-mono accent-color">${registrations.length} Artistes</span>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto">
+                            ${registrations.length === 0 ? '<p class="text-zinc-600 italic">Aucun inscrit pour le moment.</p>' : listHtml}
+                        </div>
+                        <button onclick="showView('register')" class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white">Fermer la session</button>
+                    </div>
+                `;
+            }
         }
-      } catch (err) {
-        console.error("Auth error:", err);
-      }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
-    return () => unsubscribe();
-  }, []);
 
-  // Écoute des données en temps réel pour le staff (Règle 1 & 2)
-  useEffect(() => {
-    if (!user || view !== 'admin') return;
+        // Logique d'inscription
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value;
+            const city = document.getElementById('reg-city').value;
+            const phone = document.getElementById('reg-phone').value;
 
-    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations');
-    const unsubscribe = onSnapshot(colRef, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Tri manuel (Règle 2)
-      docs.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      setRegistrations(docs);
-    }, (err) => {
-      console.error("Firestore error:", err);
-    });
+            if(name && city && phone) {
+                registrations.push({ name, city, phone });
+                showView('success');
+            } else {
+                alert("Veuillez remplir tous les champs.");
+            }
+        }
 
-    return () => unsubscribe();
-  }, [user, view]);
+        // Logique Admin (Mot de passe)
+        function promptAdmin() {
+            const pass = prompt("Accès restreint au Staff VIBZ LAB. Entrez le code :");
+            if (pass === "1234") { // Vous pouvez changer ce code
+                showView('admin');
+            } else {
+                alert("Accès refusé.");
+            }
+        }
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.city || !formData.phone) {
-      setError("Veuillez remplir tous les champs.");
-      return;
-    }
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
-        ...formData,
-        createdAt: serverTimestamp()
-      });
-      setView('success');
-      setFormData({ name: '', city: '', phone: '' });
-    } catch (err) {
-      setError("Une erreur est survenue. Réessayez.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAdminAuth = (val) => {
-    setAdminCode(val);
-    if (val === '228') { 
-      setView('admin');
-      setShowAuthModal(false);
-      setAdminCode('');
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased">
-      <div className="max-w-md mx-auto px-6 py-8 min-h-screen flex flex-col">
-        
-        {/* Header */}
-        <header className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-3xl font-black tracking-tighter italic uppercase">
-              VIBZ<span className="text-[#FFD700]">LAB</span>
-            </h1>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold">Lomé • Togo 2026</p>
-          </div>
-          
-          <button 
-            onClick={() => setShowAuthModal(true)}
-            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#FFD700]/20 transition-all"
-          >
-            <Fingerprint size={18} className="text-[#FFD700]" />
-          </button>
-        </header>
-
-        {/* Vue Inscription */}
-        {view === 'register' && (
-          <main className="flex-1">
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-[32px] p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-[-30px] right-[-30px] opacity-[0.03]">
-                <Mic2 size={160} />
-              </div>
-
-              <div className="relative z-10 space-y-8">
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Inscription Artiste</h2>
-                  <p className="text-white/40 text-xs mt-1 uppercase tracking-widest font-medium">Rejoins la révolution musicale</p>
-                </div>
-
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-                      <input 
-                        type="text"
-                        placeholder="Nom d'artiste"
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
-                        value={formData.name}
-                        onChange={e => setFormData({...formData, name: e.target.value})}
-                      />
-                    </div>
-
-                    <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-                      <input 
-                        type="text"
-                        placeholder="Ville"
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
-                        value={formData.city}
-                        onChange={e => setFormData({...formData, city: e.target.value})}
-                      />
-                    </div>
-
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
-                      <input 
-                        type="tel"
-                        placeholder="WhatsApp (ex: 90000000)"
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-[#FFD700]/50 transition-all placeholder:text-white/20"
-                        value={formData.phone}
-                        onChange={e => setFormData({...formData, phone: e.target.value})}
-                      />
-                    </div>
-                  </div>
-
-                  {error && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest">{error}</p>}
-
-                  <button 
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-[#FFD700] hover:bg-[#FFE135] text-black font-black py-4 rounded-2xl uppercase tracking-widest text-xs shadow-lg shadow-[#FFD700]/10 flex items-center justify-center gap-2 transition-transform active:scale-95 disabled:opacity-50"
-                  >
-                    {loading ? <Loader2 className="animate-spin" /> : <>Soumettre <ArrowRight size={14} /></>}
-                  </button>
-                </form>
-              </div>
-            </div>
-          </main>
-        )}
-
-        {/* Vue Succès */}
-        {view === 'success' && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <div className="w-20 h-20 bg-[#FFD700] rounded-full flex items-center justify-center mb-6 shadow-2xl shadow-[#FFD700]/20">
-              <CheckCircle2 size={36} className="text-black" />
-            </div>
-            <h2 className="text-3xl font-black italic uppercase mb-2 tracking-tighter">C'est Reçu !</h2>
-            <p className="text-white/40 text-[11px] font-bold max-w-[260px] uppercase tracking-widest leading-relaxed">
-              Le Lab analyse ton profil. Tu recevras une réponse par WhatsApp.
-            </p>
-            <button 
-              onClick={() => setView('register')}
-              className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-[#FFD700] hover:brightness-125"
-            >
-              Retour
-            </button>
-          </div>
-        )}
-
-        {/* Vue Administration Staff */}
-        {view === 'admin' && (
-          <div className="flex-1">
-            <div className="flex justify-between items-end mb-8">
-              <div>
-                <h2 className="text-xl font-black italic uppercase">Candidatures</h2>
-                <p className="text-[10px] font-bold text-[#FFD700] uppercase tracking-widest">{registrations.length} Artistes inscrits</p>
-              </div>
-              <button onClick={() => setView('register')} className="text-white/20 hover:text-white p-2">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-3 pb-10">
-              {registrations.length === 0 ? (
-                <div className="text-center py-20 text-white/10 uppercase font-bold text-xs tracking-widest">Aucun inscrit</div>
-              ) : (
-                registrations.map((reg) => (
-                  <div key={reg.id} className="bg-white/[0.02] border border-white/5 p-5 rounded-3xl flex justify-between items-center group">
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-sm uppercase">{reg.name}</h4>
-                      <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">{reg.city} • {reg.phone}</p>
-                    </div>
-                    <a 
-                      href={`https://wa.me/228${reg.phone}`} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="w-10 h-10 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-lg"
-                    >
-                      <MessageCircle size={18} />
-                    </a>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Modal Auth Staff */}
-        {showAuthModal && (
-          <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-8">
-            <div className="w-full max-w-xs space-y-8 text-center">
-              <div className="w-14 h-14 bg-white/5 rounded-3xl flex items-center justify-center mx-auto border border-white/10">
-                <Lock className="text-[#FFD700]" size={24} />
-              </div>
-              <div className="space-y-4">
-                <input 
-                  type="password"
-                  placeholder="CODE STAFF"
-                  autoFocus
-                  className="w-full bg-transparent border-b-2 border-white/10 text-center text-4xl font-black py-2 focus:border-[#FFD700] outline-none transition-all tracking-[0.4em]"
-                  value={adminCode}
-                  onChange={e => handleAdminAuth(e.target.value)}
-                />
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Accès restreint au Staff VIBZ LAB</p>
-              </div>
-              <button 
-                onClick={() => { setShowAuthModal(false); setAdminCode(''); }}
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white"
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        )}
-
-        <footer className="py-10 text-center mt-auto border-t border-white/5">
-          <p className="text-[8px] uppercase font-black tracking-[0.6em] text-white/20">
-            Design for Togo &bull; Future of Sounds &bull; 2026
-          </p>
-        </footer>
-
-      </div>
-
-      <style>{`
-        body { background-color: black; overflow-x: hidden; }
-        ::selection { background: #FFD700; color: black; }
-        ::-webkit-scrollbar { width: 0; }
-      `}</style>
-    </div>
-  );
-}
+        // Initialisation au chargement
+        showView('register');
+    </script>
+</body>
+</html>
