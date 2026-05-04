@@ -3,266 +3,669 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIBZ LAB | Correction Système</title>
+    <title>VIBZ LAB | Tournée Togo 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        :root { --gold: #D4AF37; --bg: #0A0A0A; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #fff; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-        .input-premium { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-        .input-premium:focus { border-color: var(--gold); background: rgba(212,175,55,0.05); outline: none; }
-        .city-chip { cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
-        .city-chip.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 800; }
-        .btn-gold { background: linear-gradient(135deg, #D4AF37, #B38D46); color: #000; font-weight: 800; text-transform: uppercase; }
-        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
-        #loader { transition: opacity 0.5s ease; }
+        
+        :root { --gold: #D4AF37; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #050505; 
+            color: #fff; 
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        
+        .city-chip { 
+            cursor: pointer; 
+            padding: 14px; 
+            border-radius: 14px; 
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .city-chip.active { 
+            background: var(--gold) !important; 
+            color: #000 !important; 
+            font-weight: 800;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+        }
+
+        .btn-main { 
+            background: var(--gold); 
+            color: #000; 
+            font-weight: 800; 
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(212,175,55,0.15);
+        }
+        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+
+        #admin-list { max-height: 60vh; overflow-y: auto; }
+        
+        /* Custom scrollbar for admin list */
+        #admin-list::-webkit-scrollbar { width: 4px; }
+        #admin-list::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-    <!-- Loader Initial -->
-    <div id="loader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mb-4"></div>
-        <p class="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">Initialisation...</p>
-    </div>
-
-    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+    <nav class="p-6 flex justify-between items-center max-w-lg mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3">
-                <i class="fas fa-bolt text-black text-xl"></i>
+            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center shadow-lg shadow-gold/20">
+                <i class="fas fa-bolt text-black text-lg"></i>
             </div>
-            <span class="font-extrabold text-2xl tracking-tighter uppercase italic">Vibz<span class="text-[#D4AF37]">Lab</span></span>
+            <span class="font-black text-2xl tracking-tighter italic uppercase">VIBZ<span class="text-[#D4AF37]">LAB</span></span>
         </div>
-        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37]">Admin</button>
+        <button onclick="toggleAdminModal(true)" class="p-2 text-white/20 hover:text-white transition-colors">
+            <i class="fas fa-fingerprint text-xl"></i>
+        </button>
     </nav>
 
-    <main class="max-w-xl mx-auto px-6 py-4">
+    <main class="max-w-md mx-auto px-6 pb-12">
         
-        <!-- VUE ARTISTE -->
-        <section id="view-artist">
-            <div class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold uppercase italic mb-2">Tournée <span class="text-[#D4AF37]">Vibz</span></h1>
-                <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">Rejoins l'élite artistique</p>
+        <!-- VUE INSCRIPTION -->
+        <div id="register-view" class="animate-in">
+            <div class="mb-10 text-center">
+                <h1 class="text-4xl font-black uppercase italic leading-none tracking-tighter">
+                    Rejoins la <br><span class="text-[#D4AF37]">Tournée Togo</span>
+                </h1>
+                <p class="text-white/40 text-[10px] mt-2 font-bold tracking-[0.2em] uppercase">Sélection officielle 2026</p>
             </div>
 
-            <div class="glass p-8 rounded-[2rem]">
-                <form id="regForm" class="space-y-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Nom d'artiste</label>
-                        <input type="text" id="artistName" required class="input-premium w-full p-4 rounded-xl text-white font-bold" placeholder="Ex: King Vibz">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Ville étape</label>
-                        <div class="flex flex-wrap gap-2" id="chips">
-                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sotouboua">Sotouboua</div>
-                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sokodé">Sokodé</div>
-                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Kara">Kara</div>
-                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Mango">Mango</div>
-                            <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Dapaong">Dapaong</div>
-                        </div>
-                        <input type="hidden" id="selectedCity" required>
-                    </div>
+            <div class="glass p-8 rounded-[2.5rem] space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2 block">Nom de scène</label>
+                    <input type="text" id="artistName" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none font-bold transition-all placeholder:text-white/10" placeholder="Ton nom d'artiste">
+                </div>
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">WhatsApp</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-bold">+228</span>
-                            <input type="tel" id="artistPhone" required maxlength="8" class="input-premium w-full p-4 pl-16 rounded-xl text-white font-bold tracking-widest" placeholder="00000000">
-                        </div>
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Ville de passage</label>
+                    <div class="grid grid-cols-2 gap-3" id="villes-grid">
+                        <div class="city-chip" onclick="selectCity(this, 'Sotouboua')">Sotouboua</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Sokodé')">Sokodé</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Kara')">Kara</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Mango')">Mango</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Dapaong')">Dapaong</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Lomé')">Lomé</div>
                     </div>
+                </div>
 
-                    <button type="submit" id="submitBtn" class="btn-gold w-full py-4 rounded-xl text-sm shadow-xl">
-                        Confirmer mon inscription
-                    </button>
-                </form>
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2 block">WhatsApp</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-[#D4AF37] font-black">+228</span>
+                        <input type="tel" id="artistPhone" maxlength="8" class="w-full bg-white/5 border border-white/10 p-4 pl-16 rounded-2xl font-bold tracking-[0.2em] outline-none" placeholder="00000000">
+                    </div>
+                </div>
+
+                <button onclick="handleSubmission()" id="submitBtn" class="btn-main w-full py-5 rounded-2xl uppercase tracking-widest text-sm mt-4">
+                    Confirmer l'inscription
+                </button>
+                
+                <p id="errorMsg" class="text-center text-[10px] font-bold text-red-400 hidden uppercase tracking-wider"></p>
             </div>
-        </section>
+        </div>
 
         <!-- VUE ADMIN -->
-        <section id="view-admin" class="hidden">
-            <div class="flex justify-between items-end mb-8">
+        <div id="admin-view" class="hidden animate-in">
+            <div class="flex justify-between items-end mb-8 px-2">
                 <div>
-                    <h2 class="text-3xl font-extrabold uppercase italic">Candidats</h2>
-                    <p id="stats" class="text-[#D4AF37] text-[10px] uppercase font-black">Chargement des données...</p>
+                    <h2 class="text-3xl font-black italic uppercase">LISTE 2026</h2>
+                    <p id="countLabel" class="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest">0 Inscriptions</p>
                 </div>
-                <div class="flex gap-2">
-                    <button id="btnPdf" class="w-10 h-10 glass rounded-lg flex items-center justify-center text-[#D4AF37]"><i class="fas fa-file-pdf"></i></button>
-                    <button onclick="location.reload()" class="w-10 h-10 glass rounded-lg flex items-center justify-center text-red-500"><i class="fas fa-times"></i></button>
-                </div>
+                <button onclick="window.location.reload()" class="text-[10px] font-bold text-white/30 border border-white/10 px-4 py-2 rounded-full uppercase">Quitter</button>
             </div>
-            <div id="list" class="space-y-3"></div>
-        </section>
+            <div id="admin-list" class="space-y-4 pr-1">
+                <div class="text-center py-10 opacity-20">Chargement des artistes...</div>
+            </div>
+        </div>
     </main>
 
-    <!-- MODAL LOGIN -->
-    <div id="modalLogin" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 backdrop-blur-xl">
-        <div class="glass p-8 rounded-[2rem] w-full max-w-xs text-center">
-            <p class="text-[10px] font-black uppercase text-white/40 mb-6">Code Superviseur</p>
-            <input type="password" id="pass" maxlength="4" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-8 text-[#D4AF37]">
-            <div class="flex gap-4">
-                <button onclick="document.getElementById('modalLogin').classList.add('hidden')" class="flex-1 text-white/30 text-[10px] font-bold uppercase">Annuler</button>
-                <button id="btnConfirmLogin" class="flex-1 btn-gold py-3 rounded-lg text-xs">Entrer</button>
+    <!-- MODAL CODE ADMIN -->
+    <div id="adminModal" class="fixed inset-0 bg-black/95 z-[500] hidden flex items-center justify-center p-8">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-xs text-center">
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-lock text-[#D4AF37]"></i>
+            </div>
+            <h3 class="font-black mb-6 uppercase tracking-widest text-sm">Accès Staff</h3>
+            <input type="password" id="adminCode" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center outline-none mb-10 tracking-[0.5em]" placeholder="•••">
+            <div class="flex flex-col gap-3">
+                <button onclick="checkAdminCode()" class="btn-main py-4 rounded-2xl text-xs uppercase">Se connecter</button>
+                <button onclick="toggleAdminModal(false)" class="py-2 text-[10px] uppercase font-bold text-white/30">Annuler</button>
             </div>
         </div>
     </div>
 
-    <!-- SUCCESS -->
-    <div id="modalSuccess" class="hidden fixed inset-0 bg-black z-[60] flex items-center justify-center p-6">
-        <div class="text-center space-y-6">
-            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.4)]">
-                <i class="fas fa-check text-3xl text-black"></i>
+    <!-- MODAL SUCCÈS -->
+    <div id="successModal" class="fixed inset-0 bg-[#050505] z-[600] hidden flex items-center justify-center p-10">
+        <div class="text-center animate-in">
+            <div class="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-gold/40">
+                <i class="fas fa-check text-4xl text-black"></i>
             </div>
-            <h3 class="text-3xl font-black uppercase italic">Inscription Validée</h3>
-            <p class="text-white/40 text-sm">L'équipe Vibz Lab reviendra vers toi très vite.</p>
-            <button onclick="location.reload()" class="btn-gold px-12 py-3 rounded-full text-xs">Retour</button>
+            <h2 class="text-4xl font-black mb-4 tracking-tighter">INSCRIPTION RÉUSSIE !</h2>
+            <p class="text-white/40 text-sm leading-relaxed mb-10 uppercase tracking-widest font-bold">
+                L'équipe Vibz Lab <br>va analyser ton profil. <br>À bientôt en 2026 !
+            </p>
+            <button onclick="window.location.reload()" class="btn-main px-12 py-4 rounded-2xl text-xs uppercase tracking-widest">Retour</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // CONFIGURATION
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-v2';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-togo-2026';
 
-        let currentUser = null;
-        let candidatesData = [];
+        let selectedCity = "";
+        let authReady = false;
 
-        // 1. AUTH GESTION (RULE 3)
-        const init = async () => {
+        // AUTHENTIFICATION (RÈGLE 3)
+        const initSession = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (e) {
-                console.error("Auth Error", e);
+            } catch (err) {
+                console.error("Erreur Auth:", err);
             }
         };
 
         onAuthStateChanged(auth, (user) => {
-            currentUser = user;
             if (user) {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+                authReady = true;
+                console.log("Session 2026 active");
             }
         });
 
-        init();
+        initSession();
 
-        // 2. INTERACTIONS VILLE
-        const chips = document.querySelectorAll('.city-chip');
-        const cityInput = document.getElementById('selectedCity');
-        chips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                chips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                cityInput.value = chip.dataset.city;
-            });
-        });
-
-        // 3. SOUMISSION (RULE 1)
-        const form = document.getElementById('regForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!cityInput.value) return alert("Choisis ta ville d'abord !");
-            if (!currentUser) return alert("Connexion non établie, réessaie...");
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
-
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
-                    name: document.getElementById('artistName').value,
-                    city: cityInput.value,
-                    phone: document.getElementById('artistPhone').value,
-                    timestamp: serverTimestamp(),
-                    uid: currentUser.uid
-                });
-                document.getElementById('modalSuccess').classList.remove('hidden');
-            } catch (err) {
-                console.error(err);
-                btn.disabled = false;
-                btn.innerText = "Réessayer";
-                alert("Erreur de connexion au serveur.");
-            }
-        });
-
-        // 4. ADMIN LOGIN
-        document.getElementById('admin-trigger').onclick = () => document.getElementById('modalLogin').classList.remove('hidden');
-        
-        document.getElementById('btnConfirmLogin').onclick = () => {
-            const code = document.getElementById('pass').value;
-            if (code === "228" || code === "2024") {
-                document.getElementById('modalLogin').classList.add('hidden');
-                document.getElementById('view-artist').classList.add('hidden');
-                document.getElementById('view-admin').classList.remove('hidden');
-                loadCandidates();
-            } else {
-                document.getElementById('pass').value = '';
-                alert("Code incorrect");
+        // HELPERS GLOBAUX
+        window.showError = (t) => {
+            const m = document.getElementById('errorMsg');
+            if(m) {
+                m.innerText = t;
+                m.classList.remove('hidden');
+                setTimeout(() => window.hideError(), 4000);
             }
         };
 
-        // 5. ADMIN LISTENER (RULE 2)
-        function loadCandidates() {
-            if (!currentUser) return;
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('timestamp', 'desc'));
-            
-            onSnapshot(q, (snap) => {
-                const container = document.getElementById('list');
-                container.innerHTML = '';
-                candidatesData = [];
-                document.getElementById('stats').innerText = `${snap.size} Artistes Inscrits`;
+        window.hideError = () => {
+            const m = document.getElementById('errorMsg');
+            if(m) m.classList.add('hidden');
+        };
 
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    candidatesData.push(data);
+        // UI LOGIC
+        window.selectCity = (el, city) => {
+            document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedCity = city;
+            window.hideError();
+        };
+
+        window.toggleAdminModal = (show) => {
+            document.getElementById('adminModal').classList.toggle('hidden', !show);
+            if(show) document.getElementById('adminCode').focus();
+        };
+
+        window.checkAdminCode = () => {
+            const val = document.getElementById('adminCode').value;
+            if(val === "228") {
+                toggleAdminModal(false);
+                document.getElementById('register-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                startAdminListener();
+            } else {
+                window.showError("Code incorrect");
+            }
+        };
+
+        // FORMULAIRE
+        window.handleSubmission = async () => {
+            const name = document.getElementById('artistName').value.trim();
+            const phone = document.getElementById('artistPhone').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            if(!name || !phone || !selectedCity) {
+                window.showError("Tous les champs sont requis !");
+                return;
+            }
+
+            if(phone.length < 8) {
+                window.showError("Numéro à 8 chiffres requis");
+                return;
+            }
+
+            if(!authReady) {
+                window.showError("Vérification de sécurité... Réessaie");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi...';
+                
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations_2026');
+                
+                await addDoc(colRef, {
+                    name,
+                    phone,
+                    city: selectedCity,
+                    year: 2026,
+                    createdAt: serverTimestamp(),
+                    uid: auth.currentUser.uid
+                });
+
+                document.getElementById('successModal').classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+                btn.disabled = false;
+                btn.innerText = "Réessayer";
+                window.showError("Erreur réseau. Vérifie ta connexion.");
+            }
+        };
+
+        // GESTION STAFF
+        function startAdminListener() {
+            if (!auth.currentUser) return;
+
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations_2026');
+            
+            onSnapshot(colRef, (snap) => {
+                const container = document.getElementById('admin-list');
+                const label = document.getElementById('countLabel');
+                
+                let list = [];
+                snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                
+                list.sort((a, b) => {
+                    const tA = a.createdAt?.seconds || 0;
+                    const tB = b.createdAt?.seconds || 0;
+                    return tB - tA;
+                });
+
+                label.innerText = `${list.length} Candidatures reçues`;
+                container.innerHTML = list.length === 0 ? '<p class="text-center text-white/10 py-20 uppercase font-black tracking-widest">Aucun artiste inscrit</p>' : '';
+
+                list.forEach(item => {
                     const card = document.createElement('div');
-                    card.className = "glass p-4 rounded-2xl flex justify-between items-center";
+                    card.className = "glass p-5 rounded-3xl flex justify-between items-center animate-in";
                     card.innerHTML = `
-                        <div class="truncate mr-4">
-                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city || 'Inconnue'}</p>
-                            <h4 class="font-bold text-sm truncate">${data.name}</h4>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-white/5 text-[#D4AF37] text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-wider border border-white/5">${item.city}</span>
+                            </div>
+                            <p class="font-extrabold text-lg tracking-tight uppercase">${item.name}</p>
+                            <p class="text-white/20 text-xs font-bold">+228 ${item.phone}</p>
                         </div>
-                        <div class="flex gap-2">
-                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-10 h-10 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
+                        <a href="https://wa.me/228${item.phone}" target="_blank" class="w-12 h-12 bg-white/5 text-white/50 rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-black transition-all group">
+                            <i class="fab fa-whatsapp text-xl group-hover:scale-110 transition-transform"></i>
+                        </a>
                     `;
                     container.appendChild(card);
                 });
-            }, (err) => console.log(err));
+            }, (err) => {
+                console.error("Sync Error:", err);
+                window.showError("Erreur de synchronisation.");
+            });
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VIBZ LAB | Tournée Togo 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root { --gold: #D4AF37; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #050505; 
+            color: #fff; 
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        // 6. PDF
-        document.getElementById('btnPdf').onclick = () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("VIBZ LAB - LISTE OFFICIELLE", 14, 20);
-            const rows = candidatesData.map(c => [c.name, c.city, `+228 ${c.phone}`]);
-            doc.autoTable({
-                head: [['Artiste', 'Ville', 'WhatsApp']],
-                body: rows,
-                startY: 30,
-                theme: 'grid',
-                headStyles: { fillColor: [212, 175, 55] }
-            });
-            doc.save('VibzLab_Tournee.pdf');
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        
+        .city-chip { 
+            cursor: pointer; 
+            padding: 14px; 
+            border-radius: 14px; 
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .city-chip.active { 
+            background: var(--gold) !important; 
+            color: #000 !important; 
+            font-weight: 800;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(212,175,55,0.3);
+        }
+
+        .btn-main { 
+            background: var(--gold); 
+            color: #000; 
+            font-weight: 800; 
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(212,175,55,0.15);
+        }
+        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+
+        #admin-list { max-height: 60vh; overflow-y: auto; }
+        
+        /* Custom scrollbar for admin list */
+        #admin-list::-webkit-scrollbar { width: 4px; }
+        #admin-list::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="p-6 flex justify-between items-center max-w-lg mx-auto">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center shadow-lg shadow-gold/20">
+                <i class="fas fa-bolt text-black text-lg"></i>
+            </div>
+            <span class="font-black text-2xl tracking-tighter italic uppercase">VIBZ<span class="text-[#D4AF37]">LAB</span></span>
+        </div>
+        <button onclick="toggleAdminModal(true)" class="p-2 text-white/20 hover:text-white transition-colors">
+            <i class="fas fa-fingerprint text-xl"></i>
+        </button>
+    </nav>
+
+    <main class="max-w-md mx-auto px-6 pb-12">
+        
+        <!-- VUE INSCRIPTION -->
+        <div id="register-view" class="animate-in">
+            <div class="mb-10 text-center">
+                <h1 class="text-4xl font-black uppercase italic leading-none tracking-tighter">
+                    Rejoins la <br><span class="text-[#D4AF37]">Tournée Togo</span>
+                </h1>
+                <p class="text-white/40 text-[10px] mt-2 font-bold tracking-[0.2em] uppercase">Sélection officielle 2026</p>
+            </div>
+
+            <div class="glass p-8 rounded-[2.5rem] space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2 block">Nom de scène</label>
+                    <input type="text" id="artistName" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-[#D4AF37] outline-none font-bold transition-all placeholder:text-white/10" placeholder="Ton nom d'artiste">
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-3 block">Ville de passage</label>
+                    <div class="grid grid-cols-2 gap-3" id="villes-grid">
+                        <div class="city-chip" onclick="selectCity(this, 'Sotouboua')">Sotouboua</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Sokodé')">Sokodé</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Kara')">Kara</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Mango')">Mango</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Dapaong')">Dapaong</div>
+                        <div class="city-chip" onclick="selectCity(this, 'Lomé')">Lomé</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2 block">WhatsApp</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-[#D4AF37] font-black">+228</span>
+                        <input type="tel" id="artistPhone" maxlength="8" class="w-full bg-white/5 border border-white/10 p-4 pl-16 rounded-2xl font-bold tracking-[0.2em] outline-none" placeholder="00000000">
+                    </div>
+                </div>
+
+                <button onclick="handleSubmission()" id="submitBtn" class="btn-main w-full py-5 rounded-2xl uppercase tracking-widest text-sm mt-4">
+                    Confirmer l'inscription
+                </button>
+                
+                <p id="errorMsg" class="text-center text-[10px] font-bold text-red-400 hidden uppercase tracking-wider"></p>
+            </div>
+        </div>
+
+        <!-- VUE ADMIN -->
+        <div id="admin-view" class="hidden animate-in">
+            <div class="flex justify-between items-end mb-8 px-2">
+                <div>
+                    <h2 class="text-3xl font-black italic uppercase">LISTE 2026</h2>
+                    <p id="countLabel" class="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest">0 Inscriptions</p>
+                </div>
+                <button onclick="window.location.reload()" class="text-[10px] font-bold text-white/30 border border-white/10 px-4 py-2 rounded-full uppercase">Quitter</button>
+            </div>
+            <div id="admin-list" class="space-y-4 pr-1">
+                <div class="text-center py-10 opacity-20">Chargement des artistes...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL CODE ADMIN -->
+    <div id="adminModal" class="fixed inset-0 bg-black/95 z-[500] hidden flex items-center justify-center p-8">
+        <div class="glass p-10 rounded-[3rem] w-full max-w-xs text-center">
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-lock text-[#D4AF37]"></i>
+            </div>
+            <h3 class="font-black mb-6 uppercase tracking-widest text-sm">Accès Staff</h3>
+            <input type="password" id="adminCode" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center outline-none mb-10 tracking-[0.5em]" placeholder="•••">
+            <div class="flex flex-col gap-3">
+                <button onclick="checkAdminCode()" class="btn-main py-4 rounded-2xl text-xs uppercase">Se connecter</button>
+                <button onclick="toggleAdminModal(false)" class="py-2 text-[10px] uppercase font-bold text-white/30">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SUCCÈS -->
+    <div id="successModal" class="fixed inset-0 bg-[#050505] z-[600] hidden flex items-center justify-center p-10">
+        <div class="text-center animate-in">
+            <div class="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-gold/40">
+                <i class="fas fa-check text-4xl text-black"></i>
+            </div>
+            <h2 class="text-4xl font-black mb-4 tracking-tighter">INSCRIPTION RÉUSSIE !</h2>
+            <p class="text-white/40 text-sm leading-relaxed mb-10 uppercase tracking-widest font-bold">
+                L'équipe Vibz Lab <br>va analyser ton profil. <br>À bientôt en 2026 !
+            </p>
+            <button onclick="window.location.reload()" class="btn-main px-12 py-4 rounded-2xl text-xs uppercase tracking-widest">Retour</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // CONFIGURATION
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-lab-togo-2026';
+
+        let selectedCity = "";
+        let authReady = false;
+
+        // AUTHENTIFICATION (RÈGLE 3)
+        const initSession = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Erreur Auth:", err);
+            }
         };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authReady = true;
+                console.log("Session 2026 active");
+            }
+        });
+
+        initSession();
+
+        // HELPERS GLOBAUX
+        window.showError = (t) => {
+            const m = document.getElementById('errorMsg');
+            if(m) {
+                m.innerText = t;
+                m.classList.remove('hidden');
+                setTimeout(() => window.hideError(), 4000);
+            }
+        };
+
+        window.hideError = () => {
+            const m = document.getElementById('errorMsg');
+            if(m) m.classList.add('hidden');
+        };
+
+        // UI LOGIC
+        window.selectCity = (el, city) => {
+            document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedCity = city;
+            window.hideError();
+        };
+
+        window.toggleAdminModal = (show) => {
+            document.getElementById('adminModal').classList.toggle('hidden', !show);
+            if(show) document.getElementById('adminCode').focus();
+        };
+
+        window.checkAdminCode = () => {
+            const val = document.getElementById('adminCode').value;
+            if(val === "228") {
+                toggleAdminModal(false);
+                document.getElementById('register-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                startAdminListener();
+            } else {
+                window.showError("Code incorrect");
+            }
+        };
+
+        // FORMULAIRE
+        window.handleSubmission = async () => {
+            const name = document.getElementById('artistName').value.trim();
+            const phone = document.getElementById('artistPhone').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            if(!name || !phone || !selectedCity) {
+                window.showError("Tous les champs sont requis !");
+                return;
+            }
+
+            if(phone.length < 8) {
+                window.showError("Numéro à 8 chiffres requis");
+                return;
+            }
+
+            if(!authReady) {
+                window.showError("Vérification de sécurité... Réessaie");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi...';
+                
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations_2026');
+                
+                await addDoc(colRef, {
+                    name,
+                    phone,
+                    city: selectedCity,
+                    year: 2026,
+                    createdAt: serverTimestamp(),
+                    uid: auth.currentUser.uid
+                });
+
+                document.getElementById('successModal').classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+                btn.disabled = false;
+                btn.innerText = "Réessayer";
+                window.showError("Erreur réseau. Vérifie ta connexion.");
+            }
+        };
+
+        // GESTION STAFF
+        function startAdminListener() {
+            if (!auth.currentUser) return;
+
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'registrations_2026');
+            
+            onSnapshot(colRef, (snap) => {
+                const container = document.getElementById('admin-list');
+                const label = document.getElementById('countLabel');
+                
+                let list = [];
+                snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                
+                list.sort((a, b) => {
+                    const tA = a.createdAt?.seconds || 0;
+                    const tB = b.createdAt?.seconds || 0;
+                    return tB - tA;
+                });
+
+                label.innerText = `${list.length} Candidatures reçues`;
+                container.innerHTML = list.length === 0 ? '<p class="text-center text-white/10 py-20 uppercase font-black tracking-widest">Aucun artiste inscrit</p>' : '';
+
+                list.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "glass p-5 rounded-3xl flex justify-between items-center animate-in";
+                    card.innerHTML = `
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-white/5 text-[#D4AF37] text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-wider border border-white/5">${item.city}</span>
+                            </div>
+                            <p class="font-extrabold text-lg tracking-tight uppercase">${item.name}</p>
+                            <p class="text-white/20 text-xs font-bold">+228 ${item.phone}</p>
+                        </div>
+                        <a href="https://wa.me/228${item.phone}" target="_blank" class="w-12 h-12 bg-white/5 text-white/50 rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-black transition-all group">
+                            <i class="fab fa-whatsapp text-xl group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            }, (err) => {
+                console.error("Sync Error:", err);
+                window.showError("Erreur de synchronisation.");
+            });
+        }
     </script>
 </body>
 </html>
