@@ -3,37 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBZ LAB - Future of Sounds</title>
+    <title>VIBZ LAB - Studio & Streaming</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        
+        body { 
+            background-color: #050505; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Image de fond sombre (Studio/Concert) */
+        .bg-studio {
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), 
+                        url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
         .accent-color { color: #FFD700; }
         .bg-accent { background-color: #FFD700; }
-        .notification-dot { position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background: red; border-radius: 50%; display: none; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+        
+        .notification-dot { 
+            position: absolute; top: -2px; right: -2px; 
+            width: 8px; height: 8px; 
+            background: #ff0000; border-radius: 50%; display: none; 
+        }
+
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        
+        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center">
+<body class="bg-studio flex flex-col">
 
-    <!-- Header Fixe -->
-    <header class="w-full text-center py-8 z-50 cursor-pointer" onclick="showView('home')">
-        <h1 class="text-4xl font-black tracking-tighter italic">VIBZ <span class="accent-color">LAB</span></h1>
-    </header>
+    <!-- Barre de Navigation Supérieure -->
+    <nav class="w-full flex justify-between items-center px-6 md:px-12 py-6 z-50">
+        <!-- Logo en haut à gauche -->
+        <div class="cursor-pointer" onclick="showView('home')">
+            <h1 class="text-2xl font-black tracking-tighter italic">VIBZ <span class="accent-color">LAB</span></h1>
+        </div>
 
-    <!-- Zone de Contenu Dynamique -->
-    <main id="main-content" class="w-full max-w-4xl flex-grow flex flex-col px-6">
-        <!-- Injecté par le Script -->
+        <!-- Accès Staff en haut à droite -->
+        <div class="relative">
+            <div id="admin-dot" class="notification-dot"></div>
+            <button onclick="promptAdmin()" class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400 hover:text-white transition">
+                Staff Access
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal -->
+    <main id="main-content" class="flex-grow flex flex-col items-center px-6">
+        <!-- Injecté dynamiquement -->
     </main>
 
-    <!-- Footer -->
-    <footer class="w-full text-center py-10">
-        <div class="relative inline-block">
-            <div id="admin-dot" class="notification-dot"></div>
-            <button onclick="promptAdmin()" class="text-[9px] text-zinc-800 hover:text-zinc-400 transition uppercase tracking-[0.3em]">Staff Control</button>
-        </div>
-        <p class="text-[8px] text-zinc-600 mt-4 tracking-widest uppercase">© 2026 Vibz Lab Togo • Design for Future</p>
+    <!-- Footer Simple -->
+    <footer class="py-8 text-center">
+        <p class="text-[8px] text-zinc-600 uppercase tracking-widest">© 2026 Vibz Lab • Togo Production Hub</p>
     </footer>
 
     <script>
@@ -52,7 +90,7 @@
         const db = firebase.database();
         let currentView = 'home';
 
-        // Écouteur en temps réel
+        // Écouteur de notifications
         db.ref('registrations').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && currentView !== 'admin') document.getElementById('admin-dot').style.display = 'block';
@@ -62,55 +100,41 @@
         function showView(viewName) {
             currentView = viewName;
             const container = document.getElementById('main-content');
-            window.scrollTo(0,0);
-
+            
             if (viewName === 'home') {
                 container.innerHTML = `
-                    <div class="flex flex-col items-center text-center space-y-12 py-10 animate-fade-in">
-                        <div class="space-y-4">
-                            <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none">THE <span class="accent-color italic">ZONE</span> FOR CREATIVES</h2>
-                            <p class="text-zinc-500 max-w-lg mx-auto text-sm md:text-base leading-relaxed uppercase tracking-widest">
-                                Basé au Togo, VIBZ LAB est une plateforme de streaming et un studio de production dédié aux podcasts, talk-shows et talents émergents.
-                            </p>
+                    <div class="max-w-3xl w-full text-center py-20 space-y-8 animate-in">
+                        <div class="space-y-2">
+                            <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none">VIBE <br><span class="accent-color italic">DIFFERENT.</span></h2>
+                            <p class="text-zinc-400 text-xs md:text-sm uppercase tracking-[0.4em] mt-6">Streaming • Podcast • Studio Production</p>
                         </div>
+                        
+                        <p class="text-zinc-500 max-w-lg mx-auto text-sm leading-relaxed">
+                            La nouvelle plaque tournante de la culture digitale au Togo. Nous donnons une voix aux créateurs de Lomé à Dapaong.
+                        </p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl">
-                            <div class="glass-card p-6 text-left">
-                                <h3 class="accent-color font-bold mb-2 uppercase text-xs tracking-tighter">Production</h3>
-                                <p class="text-[11px] text-zinc-400">Qualité studio professionnelle pour vos contenus audio et vidéo.</p>
-                            </div>
-                            <div class="glass-card p-6 text-left">
-                                <h3 class="accent-color font-bold mb-2 uppercase text-xs tracking-tighter">Streaming</h3>
-                                <p class="text-[11px] text-zinc-400">Diffusez vos shows sur une plateforme moderne et intuitive.</p>
-                            </div>
-                            <div class="glass-card p-6 text-left">
-                                <h3 class="accent-color font-bold mb-2 uppercase text-xs tracking-tighter">Visibilité</h3>
-                                <p class="text-[11px] text-zinc-400">Mise en avant des talents de Kara, Lomé et toute la sous-région.</p>
-                            </div>
+                        <div class="pt-10">
+                            <button onclick="showView('register')" class="bg-accent text-black px-10 py-5 font-black uppercase text-xs tracking-widest hover:brightness-110 transition scale-100 hover:scale-105 active:scale-95">
+                                S'inscrire au Lab
+                            </button>
                         </div>
-
-                        <button onclick="showView('register')" class="bg-accent text-black px-12 py-6 font-black uppercase text-sm tracking-widest hover:scale-105 transition-transform">
-                            Rejoindre le Lab
-                        </button>
                     </div>
                 `;
             } 
             
             else if (viewName === 'register') {
                 container.innerHTML = `
-                    <div class="max-w-md mx-auto w-full py-10 space-y-8 animate-fade-in">
-                        <div class="text-center">
-                            <h2 class="text-3xl font-black uppercase italic">S'inscrire</h2>
-                            <p class="text-zinc-500 text-[10px] tracking-widest uppercase">Remplissez vos informations</p>
-                        </div>
+                    <div class="max-w-md w-full glass p-8 md:p-12 mt-10 animate-in">
+                        <h2 class="text-3xl font-black uppercase italic mb-2">Inscription</h2>
+                        <p class="text-zinc-500 text-[10px] tracking-widest uppercase mb-10 border-l-2 border-yellow-500 pl-4">Rejoignez la Zone</p>
+                        
                         <div class="space-y-4">
-                            <input type="text" id="name" placeholder="NOM D'ARTISTE" class="w-full p-5 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none transition">
-                            <input type="text" id="city" placeholder="VILLE" class="w-full p-5 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none transition">
-                            <input type="tel" id="phone" placeholder="WHATSAPP (ex: 228...)" class="w-full p-5 bg-zinc-900 border border-zinc-800 text-sm focus:border-yellow-500 outline-none transition">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="showView('home')" class="w-1/3 border border-zinc-800 py-5 text-[10px] font-bold uppercase tracking-widest">Annuler</button>
-                            <button onclick="handleRegister()" class="w-2/3 bg-accent text-black py-5 font-black uppercase text-xs tracking-widest">Valider</button>
+                            <input type="text" id="name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-black/40 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded">
+                            <input type="text" id="city" placeholder="VILLE" class="w-full p-4 bg-black/40 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded">
+                            <input type="tel" id="phone" placeholder="WHATSAPP (ex: 228...)" class="w-full p-4 bg-black/40 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded">
+                            
+                            <button onclick="handleRegister()" class="w-full bg-accent text-black py-5 font-black uppercase text-xs tracking-widest mt-6">Confirmer</button>
+                            <button onclick="showView('home')" class="w-full text-zinc-500 py-2 text-[10px] font-bold uppercase tracking-widest">Retour</button>
                         </div>
                     </div>
                 `;
@@ -118,11 +142,10 @@
 
             else if (viewName === 'success') {
                 container.innerHTML = `
-                    <div class="text-center py-20 space-y-6">
-                        <div class="text-6xl text-yellow-500">✓</div>
-                        <h2 class="text-4xl font-black italic">DOSSIER ENVOYÉ</h2>
-                        <p class="text-zinc-500 text-sm uppercase tracking-widest">Le Lab va analyser ton profil.</p>
-                        <button onclick="showView('home')" class="bg-white text-black px-8 py-4 font-bold uppercase text-[10px] tracking-widest mt-10">Retour à l'accueil</button>
+                    <div class="text-center py-32 animate-in">
+                        <h2 class="text-5xl font-black accent-color italic">MERCI.</h2>
+                        <p class="text-zinc-400 text-xs uppercase tracking-widest mt-4">Ton talent est désormais dans nos radars.</p>
+                        <button onclick="showView('home')" class="mt-12 text-[10px] font-black underline uppercase tracking-widest">Accueil</button>
                     </div>
                 `;
             }
@@ -135,7 +158,7 @@
             if(name && city && phone) {
                 db.ref('registrations').push({ name, city, phone, date: Date.now() });
                 showView('success');
-            } else { alert("Merci de remplir tous les champs."); }
+            } else { alert("Champs manquants."); }
         }
 
         function promptAdmin() {
@@ -148,32 +171,32 @@
         }
 
         function deleteArtist(artistId) {
-            if(confirm("Supprimer ce profil ?")) db.ref('registrations/' + artistId).remove();
+            if(confirm("Supprimer ?")) db.ref('registrations/' + artistId).remove();
         }
 
         function renderAdmin(data) {
             const container = document.getElementById('main-content');
-            let html = '<div class="flex justify-between items-center mb-10 py-10"><h2 class="text-2xl font-black accent-color uppercase italic">Tableau de Bord</h2><button onclick="showView(\'home\')" class="text-xs text-zinc-500 uppercase font-bold tracking-widest underline">Quitter</button></div>';
+            let html = '<div class="flex justify-between items-center w-full max-w-2xl mt-10 mb-8"><h2 class="text-2xl font-black accent-color uppercase italic">Dashboard</h2><button onclick="showView(\'home\')" class="text-[10px] text-white/40 uppercase font-bold tracking-widest">Quitter</button></div>';
+            
             if (data) {
                 Object.keys(data).reverse().forEach(id => {
                     const reg = data[id];
                     html += `
-                    <div class="glass-card p-6 mb-4 flex justify-between items-center">
+                    <div class="w-full max-w-2xl glass p-6 mb-4 flex justify-between items-center animate-in">
                         <div>
-                            <p class="font-black text-white uppercase italic text-xl leading-none">${reg.name}</p>
-                            <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">${reg.city}</p>
+                            <p class="font-black text-white uppercase italic text-lg leading-none">${reg.name}</p>
+                            <p class="text-[9px] text-zinc-500 uppercase tracking-widest mt-2">${reg.city}</p>
                         </div>
                         <div class="flex gap-2">
-                            <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-green-600/20 text-green-500 p-3 text-[9px] font-black uppercase tracking-widest rounded border border-green-500/20">WhatsApp</a>
-                            <button onclick="deleteArtist('${id}')" class="bg-red-600/10 text-red-600 p-3 text-[9px] font-black uppercase tracking-widest rounded border border-red-600/20">Supprimer</button>
+                            <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-green-600/10 text-green-500 px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded border border-green-500/20">Chat</a>
+                            <button onclick="deleteArtist('${id}')" class="bg-red-600/10 text-red-500 px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded border border-red-500/20">Suppr</button>
                         </div>
                     </div>`;
                 });
-            } else { html += '<p class="text-zinc-800 text-center py-20 italic">Aucun inscrit.</p>'; }
-            container.innerHTML = `<div class="w-full">${html}</div>`;
+            } else { html += '<p class="text-zinc-600 py-20 italic">Liste vide.</p>'; }
+            container.innerHTML = `<div class="w-full flex flex-col items-center">${html}</div>`;
         }
 
-        // Initialisation
         showView('home');
     </script>
 </body>
