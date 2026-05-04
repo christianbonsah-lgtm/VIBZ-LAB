@@ -3,186 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIBZ LAB | Official Tour</title>
+    <title>VIBZ LAB | Correction Système</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        
-        :root {
-            --gold: #D4AF37;
-            --gold-dark: #B38D46;
-            --bg: #0A0A0A;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: #ffffff;
-            -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .input-premium {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .input-premium:focus {
-            background: rgba(212, 175, 55, 0.05);
-            border-color: var(--gold);
-            outline: none;
-        }
-
-        .city-chip {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
-            user-select: none;
-        }
-
-        .city-chip.active {
-            background: var(--gold);
-            color: black;
-            border-color: var(--gold);
-            font-weight: 800;
-        }
-
-        .btn-main {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-            color: #000;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s active;
-        }
-
-        .btn-main:active {
-            transform: scale(0.98);
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        :root { --gold: #D4AF37; --bg: #0A0A0A; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #fff; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        .input-premium { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .input-premium:focus { border-color: var(--gold); background: rgba(212,175,55,0.05); outline: none; }
+        .city-chip { cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+        .city-chip.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 800; }
+        .btn-gold { background: linear-gradient(135deg, #D4AF37, #B38D46); color: #000; font-weight: 800; text-transform: uppercase; }
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+        #loader { transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen">
 
+    <!-- Loader Initial -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-[#D4AF37]/20 border-t-[#D4AF37] rounded-full animate-spin mb-4"></div>
+        <p class="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">Initialisation...</p>
+    </div>
+
     <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+            <div class="w-10 h-10 bg-[#D4AF37] rounded-xl flex items-center justify-center rotate-3">
                 <i class="fas fa-bolt text-black text-xl"></i>
             </div>
             <span class="font-extrabold text-2xl tracking-tighter uppercase italic">Vibz<span class="text-[#D4AF37]">Lab</span></span>
         </div>
-        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37] p-2">
-            Admin
-        </button>
+        <button id="admin-trigger" class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-[#D4AF37]">Admin</button>
     </nav>
 
     <main class="max-w-xl mx-auto px-6 py-4">
         
-        <!-- SECTION ARTISTE -->
-        <section id="view-artist" class="animate-fade-in">
-            <header class="mb-8 text-center">
+        <!-- VUE ARTISTE -->
+        <section id="view-artist">
+            <div class="mb-8 text-center">
                 <h1 class="text-4xl font-extrabold uppercase italic mb-2">Tournée <span class="text-[#D4AF37]">Vibz</span></h1>
-                <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">L'excellence artistique au Togo</p>
-            </header>
+                <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em]">Rejoins l'élite artistique</p>
+            </div>
 
-            <div class="glass-card p-6 md:p-8 rounded-[2rem]">
-                <form id="registrationForm" class="space-y-6">
+            <div class="glass p-8 rounded-[2rem]">
+                <form id="regForm" class="space-y-6">
                     <div class="space-y-2">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Nom de scène</label>
-                        <input type="text" id="artistName" required placeholder="Ex: King Vibz" 
-                            class="input-premium w-full p-4 rounded-xl text-white font-bold">
+                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Nom d'artiste</label>
+                        <input type="text" id="artistName" required class="input-premium w-full p-4 rounded-xl text-white font-bold" placeholder="Ex: King Vibz">
                     </div>
                     
                     <div class="space-y-2">
                         <label class="text-[10px] uppercase font-black text-white/40 ml-1">Ville étape</label>
-                        <div class="flex flex-wrap gap-2" id="cityChipsContainer">
+                        <div class="flex flex-wrap gap-2" id="chips">
                             <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sotouboua">Sotouboua</div>
                             <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Sokodé">Sokodé</div>
                             <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Kara">Kara</div>
                             <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Mango">Mango</div>
                             <div class="city-chip px-4 py-2 rounded-lg text-[10px] font-bold uppercase" data-city="Dapaong">Dapaong</div>
                         </div>
-                        <input type="hidden" id="selectedCityInput">
+                        <input type="hidden" id="selectedCity" required>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">Numéro WhatsApp</label>
+                        <label class="text-[10px] uppercase font-black text-white/40 ml-1">WhatsApp</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-bold">+228</span>
-                            <input type="tel" id="artistPhone" required maxlength="8" placeholder="00000000" 
-                                class="input-premium w-full p-4 pl-16 rounded-xl text-white font-bold tracking-widest">
+                            <input type="tel" id="artistPhone" required maxlength="8" class="input-premium w-full p-4 pl-16 rounded-xl text-white font-bold tracking-widest" placeholder="00000000">
                         </div>
                     </div>
 
-                    <button type="submit" id="submitBtn" class="btn-main w-full py-4 rounded-xl text-sm shadow-lg">
-                        S'inscrire à la tournée
+                    <button type="submit" id="submitBtn" class="btn-gold w-full py-4 rounded-xl text-sm shadow-xl">
+                        Confirmer mon inscription
                     </button>
                 </form>
             </div>
         </section>
 
-        <!-- SECTION ADMIN -->
-        <section id="view-admin" class="hidden animate-fade-in">
-            <div class="flex justify-between items-center mb-8">
+        <!-- VUE ADMIN -->
+        <section id="view-admin" class="hidden">
+            <div class="flex justify-between items-end mb-8">
                 <div>
                     <h2 class="text-3xl font-extrabold uppercase italic">Candidats</h2>
-                    <p id="statsLabel" class="text-[#D4AF37] text-[10px] uppercase font-black">Chargement...</p>
+                    <p id="stats" class="text-[#D4AF37] text-[10px] uppercase font-black">Chargement des données...</p>
                 </div>
                 <div class="flex gap-2">
-                    <button id="downloadPdfBtn" class="w-10 h-10 glass-card rounded-lg flex items-center justify-center text-[#D4AF37]">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>
-                    <button id="exitAdminBtn" class="w-10 h-10 glass-card rounded-lg flex items-center justify-center text-red-500">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button id="btnPdf" class="w-10 h-10 glass rounded-lg flex items-center justify-center text-[#D4AF37]"><i class="fas fa-file-pdf"></i></button>
+                    <button onclick="location.reload()" class="w-10 h-10 glass rounded-lg flex items-center justify-center text-red-500"><i class="fas fa-times"></i></button>
                 </div>
             </div>
-
-            <div id="candidatesList" class="space-y-3"></div>
+            <div id="list" class="space-y-3"></div>
         </section>
     </main>
 
-    <!-- Modal Login Admin -->
-    <div id="loginModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-6 backdrop-blur-md">
-        <div class="glass-card p-8 rounded-[2rem] w-full max-w-xs text-center">
-            <h4 class="text-[10px] font-black uppercase text-white/40 mb-6 tracking-widest">Code d'accès</h4>
-            <input type="password" id="adminPass" maxlength="4" placeholder="••••" 
-                class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-8 text-[#D4AF37]">
-            <div class="grid grid-cols-2 gap-3">
-                <button id="cancelLoginBtn" class="text-white/20 text-[10px] font-bold uppercase py-2">Fermer</button>
-                <button id="confirmLoginBtn" class="btn-main py-3 rounded-lg text-xs">Valider</button>
+    <!-- MODAL LOGIN -->
+    <div id="modalLogin" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-6 backdrop-blur-xl">
+        <div class="glass p-8 rounded-[2rem] w-full max-w-xs text-center">
+            <p class="text-[10px] font-black uppercase text-white/40 mb-6">Code Superviseur</p>
+            <input type="password" id="pass" maxlength="4" class="w-full bg-transparent border-b-2 border-[#D4AF37] text-4xl text-center font-black focus:outline-none mb-8 text-[#D4AF37]">
+            <div class="flex gap-4">
+                <button onclick="document.getElementById('modalLogin').classList.add('hidden')" class="flex-1 text-white/30 text-[10px] font-bold uppercase">Annuler</button>
+                <button id="btnConfirmLogin" class="flex-1 btn-gold py-3 rounded-lg text-xs">Entrer</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Succès -->
-    <div id="successModal" class="hidden fixed inset-0 bg-black/98 flex items-center justify-center z-50 p-6">
-        <div class="text-center space-y-6 animate-fade-in">
-            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+    <!-- SUCCESS -->
+    <div id="modalSuccess" class="hidden fixed inset-0 bg-black z-[60] flex items-center justify-center p-6">
+        <div class="text-center space-y-6">
+            <div class="w-20 h-20 bg-[#D4AF37] rounded-full mx-auto flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.4)]">
                 <i class="fas fa-check text-3xl text-black"></i>
             </div>
-            <h3 class="text-3xl font-black uppercase italic">Bienvenue dans Vibz Lab</h3>
-            <p class="text-white/40 text-sm">Ton inscription a été enregistrée avec succès.</p>
-            <button id="closeSuccessBtn" class="btn-main px-10 py-3 rounded-full text-xs">Fermer</button>
+            <h3 class="text-3xl font-black uppercase italic">Inscription Validée</h3>
+            <p class="text-white/40 text-sm">L'équipe Vibz Lab reviendra vers toi très vite.</p>
+            <button onclick="location.reload()" class="btn-gold px-12 py-3 rounded-full text-xs">Retour</button>
         </div>
     </div>
 
@@ -191,159 +128,141 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIG
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-final';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vibz-tour-v2';
 
-        let user = null;
+        let currentUser = null;
+        let candidatesData = [];
 
-        // AUTH INITIALIZATION
-        const initAuth = async () => {
+        // 1. AUTH GESTION (RULE 3)
+        const init = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (e) { console.error("Auth error:", e); }
+            } catch (e) {
+                console.error("Auth Error", e);
+            }
         };
 
-        onAuthStateChanged(auth, (u) => {
-            user = u;
-            console.log("User ready:", u?.uid);
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+            }
         });
 
-        initAuth();
+        init();
 
-        // UI ACTIONS : Sélecteur de ville
-        const cityChips = document.querySelectorAll('.city-chip');
-        const cityInput = document.getElementById('selectedCityInput');
-        
-        cityChips.forEach(chip => {
-            chip.addEventListener('click', (e) => {
-                e.preventDefault();
-                cityChips.forEach(c => c.classList.remove('active'));
+        // 2. INTERACTIONS VILLE
+        const chips = document.querySelectorAll('.city-chip');
+        const cityInput = document.getElementById('selectedCity');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
-                cityInput.value = chip.getAttribute('data-city');
+                cityInput.value = chip.dataset.city;
             });
         });
 
-        // FORMULAIRE : Inscription
-        const regForm = document.getElementById('registrationForm');
-        regForm.addEventListener('submit', async (e) => {
+        // 3. SOUMISSION (RULE 1)
+        const form = document.getElementById('regForm');
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const city = cityInput.value;
-            if (!city) {
-                alert("Erreur: Choisis une ville étape !");
-                return;
-            }
-
-            if (!user) {
-                alert("Connexion en cours, réessaie dans 2 secondes...");
-                return;
-            }
+            if (!cityInput.value) return alert("Choisis ta ville d'abord !");
+            if (!currentUser) return alert("Connexion non établie, réessaie...");
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi...';
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), {
                     name: document.getElementById('artistName').value,
-                    city: city,
+                    city: cityInput.value,
                     phone: document.getElementById('artistPhone').value,
-                    createdAt: serverTimestamp()
+                    timestamp: serverTimestamp(),
+                    uid: currentUser.uid
                 });
-                document.getElementById('successModal').classList.remove('hidden');
+                document.getElementById('modalSuccess').classList.remove('hidden');
             } catch (err) {
                 console.error(err);
                 btn.disabled = false;
                 btn.innerText = "Réessayer";
-                alert("Une erreur est survenue lors de l'envoi.");
+                alert("Erreur de connexion au serveur.");
             }
         });
 
-        // MODAL SUCCÈS
-        document.getElementById('closeSuccessBtn').onclick = () => location.reload();
-
-        // ADMIN : Accès
-        const loginModal = document.getElementById('loginModal');
-        document.getElementById('admin-trigger').onclick = () => loginModal.classList.remove('hidden');
-        document.getElementById('cancelLoginBtn').onclick = () => loginModal.classList.add('hidden');
-
-        document.getElementById('confirmLoginBtn').onclick = () => {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === "228" || pass === "2024") {
-                loginModal.classList.add('hidden');
+        // 4. ADMIN LOGIN
+        document.getElementById('admin-trigger').onclick = () => document.getElementById('modalLogin').classList.remove('hidden');
+        
+        document.getElementById('btnConfirmLogin').onclick = () => {
+            const code = document.getElementById('pass').value;
+            if (code === "228" || code === "2024") {
+                document.getElementById('modalLogin').classList.add('hidden');
                 document.getElementById('view-artist').classList.add('hidden');
                 document.getElementById('view-admin').classList.remove('hidden');
-                startAdminListener();
+                loadCandidates();
             } else {
-                document.getElementById('adminPass').value = "";
-                document.getElementById('adminPass').placeholder = "CODE FAUX";
+                document.getElementById('pass').value = '';
+                alert("Code incorrect");
             }
         };
 
-        document.getElementById('exitAdminBtn').onclick = () => location.reload();
-
-        // ADMIN : Liste des candidats
-        let allData = [];
-        function startAdminListener() {
-            if (!user) return;
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('createdAt', 'desc'));
+        // 5. ADMIN LISTENER (RULE 2)
+        function loadCandidates() {
+            if (!currentUser) return;
+            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'registrations'), orderBy('timestamp', 'desc'));
             
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('candidatesList');
-                list.innerHTML = '';
-                allData = [];
+            onSnapshot(q, (snap) => {
+                const container = document.getElementById('list');
+                container.innerHTML = '';
+                candidatesData = [];
+                document.getElementById('stats').innerText = `${snap.size} Artistes Inscrits`;
 
-                document.getElementById('statsLabel').innerText = `${snapshot.size} Artistes inscrits`;
-
-                snapshot.forEach(doc => {
+                snap.forEach(doc => {
                     const data = doc.data();
-                    allData.push(data);
-                    
-                    const el = document.createElement('div');
-                    el.className = "glass-card p-4 rounded-2xl flex items-center justify-between";
-                    el.innerHTML = `
-                        <div class="overflow-hidden pr-2">
-                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city}</p>
-                            <h4 class="font-bold truncate text-sm">${data.name}</h4>
+                    candidatesData.push(data);
+                    const card = document.createElement('div');
+                    card.className = "glass p-4 rounded-2xl flex justify-between items-center";
+                    card.innerHTML = `
+                        <div class="truncate mr-4">
+                            <p class="text-[9px] font-black text-[#D4AF37] uppercase">${data.city || 'Inconnue'}</p>
+                            <h4 class="font-bold text-sm truncate">${data.name}</h4>
                         </div>
                         <div class="flex gap-2">
-                            <a href="tel:+228${data.phone}" class="w-9 h-9 bg-white/5 rounded-lg flex items-center justify-center text-white/40">
-                                <i class="fas fa-phone-alt text-xs"></i>
-                            </a>
-                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-9 h-9 bg-green-500/10 text-green-500 rounded-lg flex items-center justify-center">
-                                <i class="fab fa-whatsapp text-xs"></i>
+                            <a href="https://wa.me/228${data.phone}" target="_blank" class="w-10 h-10 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center">
+                                <i class="fab fa-whatsapp"></i>
                             </a>
                         </div>
                     `;
-                    list.appendChild(el);
+                    container.appendChild(card);
                 });
-            }, (error) => console.log("Stream error", error));
+            }, (err) => console.log(err));
         }
 
-        // EXPORT PDF
-        document.getElementById('downloadPdfBtn').onclick = () => {
+        // 6. PDF
+        document.getElementById('btnPdf').onclick = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text("VIBZ LAB - LISTE DES CANDIDATS", 14, 20);
-            
-            const rows = allData.map(c => [c.name, c.city, `+228 ${c.phone}`]);
+            doc.setFontSize(18);
+            doc.text("VIBZ LAB - LISTE OFFICIELLE", 14, 20);
+            const rows = candidatesData.map(c => [c.name, c.city, `+228 ${c.phone}`]);
             doc.autoTable({
                 head: [['Artiste', 'Ville', 'WhatsApp']],
                 body: rows,
-                startY: 25,
+                startY: 30,
+                theme: 'grid',
                 headStyles: { fillColor: [212, 175, 55] }
             });
             doc.save('VibzLab_Tournee.pdf');
         };
-
     </script>
 </body>
 </html>
