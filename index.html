@@ -9,36 +9,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
-
+        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; scroll-behavior: smooth; }
         .bg-studio {
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(5,5,5,1)), 
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(5,5,5,1)), 
                         url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80');
             background-size: cover; background-position: center; background-attachment: fixed;
         }
-
         .accent-color { color: #FF0000; }
         .bg-accent { background-color: #8B0000; }
         .bg-accent:hover { background-color: #FF0000; }
-        
-        .notification-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ff0000; border-radius: 50%; display: none; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .vl-box {
-            background-color: #FF0000;
-            color: white;
-            padding: 2px 8px;
-            font-weight: 900;
-            font-style: italic;
-            border-radius: 2px;
-            margin-right: 10px;
-        }
-
+        .vl-box { background-color: #FF0000; color: white; padding: 2px 8px; font-weight: 900; font-style: italic; border-radius: 2px; margin-right: 10px; }
         .nav-link { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: 0.3s; color: #666; }
         .nav-link:hover, .nav-link.active { color: white; }
+        .step-number { font-size: 40px; font-weight: 900; opacity: 0.1; position: absolute; top: 10px; right: 20px; }
     </style>
 </head>
 <body class="bg-studio flex flex-col">
@@ -48,17 +34,13 @@
             <span class="vl-box text-xl">VL</span>
             <h1 class="text-xl font-black tracking-tighter uppercase italic">VIBZ <span class="accent-color">LAB</span></h1>
         </div>
-        
-        <div class="flex gap-8 items-center bg-white/5 px-6 py-3 rounded-full border border-white/5">
+        <div class="flex flex-wrap gap-6 justify-center items-center bg-white/5 px-6 py-3 rounded-full border border-white/5">
             <span class="nav-link" id="nav-home" onclick="showView('home')">Accueil</span>
+            <span class="nav-link" id="nav-vision" onclick="showView('vision')">Notre Vision</span>
             <span class="nav-link" id="nav-tour" onclick="showView('tournee')">Tournée Découverte</span>
             <span class="nav-link" id="nav-services" onclick="showView('services')">Prestations</span>
         </div>
-
-        <div class="relative">
-            <div id="admin-dot" class="notification-dot"></div>
-            <button onclick="promptAdmin()" class="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-600 hover:text-white transition">Staff</button>
-        </div>
+        <button onclick="promptAdmin()" class="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-600 hover:text-white transition">Staff Access</button>
     </nav>
 
     <main id="main-content" class="flex-grow flex flex-col items-center px-6"></main>
@@ -68,6 +50,7 @@
     </footer>
 
     <script>
+        // Ta config Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCaKG3bQcenE4yyGPzHoUEwr9lJ6OAssXQ",
             authDomain: "vibz-lab.firebaseapp.com",
@@ -77,158 +60,195 @@
             messagingSenderId: "39630575995",
             appId: "1:39630575995:web:da457e123e2cb54274c5de"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let currentView = 'home';
 
-        function showView(viewName) {
-            currentView = viewName;
+        function showView(viewName, data = null) {
             const container = document.getElementById('main-content');
-            
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active', 'accent-color'));
-            const activeNav = document.getElementById('nav-' + (viewName === 'register' ? 'home' : viewName));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById('nav-' + viewName);
             if(activeNav) activeNav.classList.add('active');
 
             if (viewName === 'home') {
                 container.innerHTML = `
                     <div class="max-w-4xl w-full text-center py-20 space-y-10 animate-in">
                         <div class="space-y-4">
-                            <span class="text-white text-[10px] font-bold uppercase tracking-[0.5em] bg-red-600/20 border border-red-600/30 px-4 py-2 rounded-full">Luxe Urbain & Media Hub</span>
-                            <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none pt-4">
-                                CREATE <span class="accent-color italic">BEYOND</span><br>LIMITS.
-                            </h2>
-                            <p class="text-zinc-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed mt-6">
-                                Écosystème premium dédié à la production audiovisuelle et à l'incubation de talents créatifs au Togo.
-                            </p>
+                            <span class="text-white text-[10px] font-bold uppercase tracking-[0.5em] bg-red-600/20 border border-red-600/30 px-4 py-2 rounded-full">The New Media Era</span>
+                            <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none pt-4">L'IMPACT PAR <br><span class="accent-color italic text-white">L'IMAGE.</span></h2>
+                            <p class="text-zinc-400 text-sm md:text-base max-w-xl mx-auto mt-6 italic">"Vibz Lab n'est pas qu'un studio, c'est le catalyseur de la culture urbaine togolaise."</p>
                         </div>
                         <div class="flex justify-center gap-4">
-                            <button onclick="showView('services')" class="bg-accent text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest transition">Nos Prestations</button>
-                            <button onclick="showView('tournee')" class="border border-white/10 text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition">La Tournée</button>
+                            <button onclick="showView('services')" class="bg-accent text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest transition">Réserver une Session</button>
+                            <button onclick="showView('vision')" class="border border-white/10 text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition">Nos Objectifs</button>
                         </div>
-                    </div>
-                `;
-            } 
-            
-            else if (viewName === 'tournee') {
+                    </div>`;
+            }
+
+            else if (viewName === 'vision') {
                 container.innerHTML = `
-                    <div class="max-w-6xl w-full py-10 animate-in">
+                    <div class="max-w-5xl w-full py-10 animate-in">
                         <div class="text-center mb-16">
-                            <h2 class="text-4xl font-black italic uppercase accent-color">Tournée Découverte</h2>
-                            <p class="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">Dénicheur de pépites nationales</p>
+                            <h2 class="text-4xl font-black uppercase italic accent-color">L'ADN DE VIBZ LAB</h2>
+                            <p class="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">Notre plan stratégique 2026-2030</p>
                         </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-                            ${['Sotouboua', 'Sokodé', 'Kara', 'Mango', 'Dapaong'].map(ville => `
-                                <div class="glass p-6 border-l-4 border-red-600">
-                                    <h3 class="font-black text-lg uppercase italic mb-1">${ville}</h3>
-                                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-4">Étape Programmée</p>
-                                    <button onclick="showView('register')" class="text-[9px] font-black accent-color uppercase tracking-tighter hover:underline">S'inscrire →</button>
-                                </div>
-                            `).join('')}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="glass p-10 relative overflow-hidden">
+                                <span class="step-number">01</span>
+                                <h3 class="font-black uppercase text-red-600 mb-4 tracking-widest">Étape 1 : Émergence</h3>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Lancement de la <b>Tournée Découverte</b>. Identifier les talents dans les 5 régions du Togo et digitaliser leur art via des sessions live professionnelles.</p>
+                            </div>
+                            <div class="glass p-10 relative overflow-hidden">
+                                <span class="step-number">02</span>
+                                <h3 class="font-black uppercase text-red-600 mb-4 tracking-widest">Étape 2 : Structure</h3>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Devenir le Hub média N°1 pour les <b>Podcasts</b> et les <b>Live Shows</b>. Mise en place d'une plateforme de streaming exclusive pour les contenus produits par le Lab.</p>
+                            </div>
+                            <div class="glass p-10 relative overflow-hidden">
+                                <span class="step-number">03</span>
+                                <h3 class="font-black uppercase text-red-600 mb-4 tracking-widest">Étape 3 : Expansion</h3>
+                                <p class="text-xs text-zinc-400 leading-relaxed">Ouverture du département <b>Cinématographique (Clips Vidéo)</b> et export du modèle Vibz Lab dans la sous-région Ouest-Africaine.</p>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
 
             else if (viewName === 'services') {
                 container.innerHTML = `
                     <div class="max-w-5xl w-full py-10 animate-in text-center">
-                        <h2 class="text-4xl font-black uppercase italic mb-16">Nos <span class="accent-color">Prestations</span></h2>
+                        <h2 class="text-4xl font-black uppercase italic mb-16">Plateforme de <span class="accent-color">Réservation</span></h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div class="glass p-10 flex flex-col items-center">
                                 <div class="text-3xl mb-4">🎙️</div>
-                                <h3 class="font-black uppercase mb-2">Podcast</h3>
-                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Production, mixage et diffusion de vos shows audio professionnels.</p>
-                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Réserver</a>
+                                <h3 class="font-black uppercase mb-2">Podcast Session</h3>
+                                <p class="text-xs text-zinc-500 mb-6">Qualité radio, mixage live et set design inclus.</p>
+                                <button onclick="showBooking('Podcast')" class="bg-accent text-white px-6 py-2 text-[10px] font-black uppercase tracking-widest">Réserver</button>
                             </div>
                             <div class="glass p-10 flex flex-col items-center">
                                 <div class="text-3xl mb-4">📹</div>
                                 <h3 class="font-black uppercase mb-2">Live Show</h3>
-                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Captation multicaméra et diffusion live de vos événements.</p>
-                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Nous contacter</a>
+                                <p class="text-xs text-zinc-500 mb-6">Captation multicaméra haute performance pour artistes.</p>
+                                <button onclick="showBooking('Live Show')" class="bg-accent text-white px-6 py-2 text-[10px] font-black uppercase tracking-widest">Réserver</button>
                             </div>
-                            <div class="glass p-10 opacity-50 flex flex-col items-center relative overflow-hidden">
-                                <div class="absolute top-4 right-[-20px] bg-red-600 text-white text-[8px] font-bold px-8 py-1 rotate-45 uppercase">Bientôt</div>
+                            <div class="glass p-10 opacity-50 flex flex-col items-center">
                                 <div class="text-3xl mb-4">🎬</div>
                                 <h3 class="font-black uppercase mb-2">Clip Vidéo</h3>
-                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Réalisation cinématographique de clips musicaux.</p>
+                                <p class="text-xs text-zinc-500 mb-6">Réalisation cinématographique 4K.</p>
                                 <span class="text-[9px] font-black text-zinc-600 uppercase">Indisponible</span>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+            }
+
+            else if (viewName === 'tournee') {
+                container.innerHTML = `
+                    <div class="max-w-6xl w-full py-10 animate-in text-center">
+                        <h2 class="text-4xl font-black italic uppercase accent-color mb-12">Tournée Découverte</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+                            ${['Sotouboua', 'Sokodé', 'Kara', 'Mango', 'Dapaong'].map(v => `
+                                <div class="glass p-6 border-l-4 border-red-600 text-left">
+                                    <h3 class="font-black text-lg uppercase italic mb-4">${v}</h3>
+                                    <button onclick="showView('register')" class="text-[9px] font-black accent-color uppercase tracking-tighter hover:underline">Candidature →</button>
+                                </div>`).join('')}
+                        </div>
+                    </div>`;
             }
 
             else if (viewName === 'register') {
                 container.innerHTML = `
                     <div class="max-w-md w-full glass p-10 mt-6 animate-in">
-                        <h2 class="text-2xl font-black uppercase italic mb-2 tracking-tighter">Inscription Tournée</h2>
-                        <p class="text-zinc-500 text-[9px] tracking-[0.3em] uppercase mb-10 border-l-2 border-red-600 pl-4 italic">Rejoignez la Tournée Découverte</p>
+                        <h2 class="text-2xl font-black uppercase italic mb-8 border-l-4 border-red-600 pl-4">Inscription Tournée</h2>
                         <div class="space-y-4">
-                            <input type="text" id="name" placeholder="NOM COMPLET / NOM D'ARTISTE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
-                            <select id="city" class="w-full p-4 bg-black border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
-                                <option value="">CHOISIR VOTRE VILLE</option>
-                                <option value="SOTOUBOUA">SOTOUBOUA</option>
-                                <option value="SOKODÉ">SOKODÉ</option>
-                                <option value="KARA">KARA</option>
-                                <option value="MANGO">MANGO</option>
-                                <option value="DAPAONG">DAPAONG</option>
+                            <input type="text" id="reg-name" placeholder="NOM D'ARTISTE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                            <select id="reg-city" class="w-full p-4 bg-black border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                                <option value="">VILLE DE PASSAGE</option>
+                                <option value="SOTOUBOUA">SOTOUBOUA</option><option value="SOKODÉ">SOKODÉ</option>
+                                <option value="KARA">KARA</option><option value="MANGO">MANGO</option><option value="DAPAONG">DAPAONG</option>
                             </select>
-                            <input type="tel" id="phone" placeholder="WHATSAPP (EX: +228...)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
-                            <button onclick="handleRegister()" class="w-full bg-accent text-white py-5 font-black uppercase text-xs tracking-widest mt-6 hover:scale-[1.01] transition-transform">Valider ma candidature</button>
-                            <button onclick="showView('tournee')" class="w-full text-zinc-600 py-2 text-[9px] font-bold uppercase tracking-widest">Annuler</button>
+                            <input type="tel" id="reg-phone" placeholder="WHATSAPP (+228...)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                            <button onclick="handleTourRegister()" class="w-full bg-accent text-white py-5 font-black uppercase text-xs tracking-widest mt-6">Envoyer ma candidature</button>
                         </div>
-                    </div>
-                `;
-            }
-
-            else if (viewName === 'success') {
-                container.innerHTML = `<div class="text-center py-32 animate-in"><h2 class="text-5xl font-black accent-color italic">REÇU.</h2><p class="text-zinc-500 text-[10px] uppercase tracking-widest mt-4">L'assistante reviendra vers vous très prochainement.</p><button onclick="showView('home')" class="mt-12 text-[10px] font-bold underline uppercase tracking-widest">Accueil</button></div>`;
+                    </div>`;
             }
         }
 
-        function handleRegister() {
-            const name = document.getElementById('name').value;
-            const city = document.getElementById('city').value;
-            const phone = document.getElementById('phone').value;
+        // --- NOUVELLE FONCTION : FORMULAIRE DE RÉSERVATION DE SERVICES ---
+        function showBooking(serviceType) {
+            const container = document.getElementById('main-content');
+            container.innerHTML = `
+                <div class="max-w-md w-full glass p-10 mt-6 animate-in">
+                    <h2 class="text-2xl font-black uppercase italic mb-2 tracking-tighter">Réservation : ${serviceType}</h2>
+                    <p class="text-zinc-500 text-[9px] tracking-[0.3em] uppercase mb-10 border-l-2 border-red-600 pl-4">Planification de votre session</p>
+                    <div class="space-y-4">
+                        <input type="text" id="book-name" placeholder="VOTRE NOM / STRUCTURE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                        <input type="date" id="book-date" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                        <textarea id="book-desc" placeholder="DÉTAILS DU PROJET (Thème, nombre de personnes...)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white h-32"></textarea>
+                        <input type="tel" id="book-phone" placeholder="CONTACT WHATSAPP" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none text-white">
+                        <button onclick="handleServiceBooking('${serviceType}')" class="w-full bg-accent text-white py-5 font-black uppercase text-xs tracking-widest mt-6">Confirmer la demande</button>
+                        <button onclick="showView('services')" class="w-full text-zinc-600 py-2 text-[9px] font-bold uppercase tracking-widest">Retour aux services</button>
+                    </div>
+                </div>`;
+        }
+
+        // --- GESTION DES ENVOIS FIREBASE ---
+        function handleTourRegister() {
+            const name = document.getElementById('reg-name').value;
+            const city = document.getElementById('reg-city').value;
+            const phone = document.getElementById('reg-phone').value;
             if(name && city && phone) {
-                db.ref('registrations').push({ name, city, phone, date: Date.now() });
-                showView('success');
-            } else { alert("Veuillez remplir tous les champs."); }
+                db.ref('registrations_tournee').push({ name, city, phone, date: Date.now() });
+                alert("Candidature Tournée envoyée !");
+                showView('home');
+            } else { alert("Champs requis."); }
+        }
+
+        function handleServiceBooking(type) {
+            const name = document.getElementById('book-name').value;
+            const date = document.getElementById('book-date').value;
+            const desc = document.getElementById('book-desc').value;
+            const phone = document.getElementById('book-phone').value;
+            if(name && date && phone) {
+                db.ref('reservations_services').push({ type, name, preferred_date: date, description: desc, phone, status: 'pending', timestamp: Date.now() });
+                alert("Demande de réservation reçue. Le staff VL vous contactera.");
+                showView('home');
+            } else { alert("Veuillez remplir les informations de contact."); }
         }
 
         function promptAdmin() {
-            if (prompt("CODE STAFF :") === "1120") {
-                document.getElementById('admin-dot').style.display = 'none';
-                showView('admin');
-            }
+            if (prompt("CODE STAFF :") === "1120") showAdmin();
         }
 
-        function deleteArtist(artistId) {
-            if(confirm("Confirmer la suppression ?")) db.ref('registrations/' + artistId).remove();
-        }
-
-        function renderAdmin(data) {
+        function showAdmin() {
             const container = document.getElementById('main-content');
-            let html = '<div class="flex justify-between items-center w-full max-w-2xl mt-10 mb-8"><h2 class="text-xl font-black accent-color uppercase italic">Candidatures Tournée</h2><button onclick="showView(\'home\')" class="text-[9px] text-white/30 uppercase font-bold border border-white/10 px-4 py-2">Fermer</button></div>';
-            if (data) {
-                Object.keys(data).reverse().forEach(id => {
-                    const reg = data[id];
-                    html += `
-                    <div class="w-full max-w-2xl glass p-6 mb-4 flex justify-between items-center border-l-2 border-red-600/30">
-                        <div>
-                            <p class="font-black text-white uppercase italic text-lg leading-none">${reg.name}</p>
-                            <p class="text-[9px] text-zinc-600 uppercase tracking-widest mt-2">${reg.city} • ${new Date(reg.date).toLocaleDateString()}</p>
+            container.innerHTML = `
+                <div class="w-full max-w-4xl py-10 animate-in">
+                    <h2 class="text-2xl font-black accent-color uppercase italic mb-10">Tableau de Bord Staff</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div id="admin-tour">
+                            <h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-zinc-500 italic">Inscriptions Tournée</h3>
+                            <div id="list-tour" class="space-y-2"></div>
                         </div>
-                        <div class="flex gap-2">
-                            <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-red-600/10 text-white px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded border border-red-600/20">Contacter</a>
-                            <button onclick="deleteArtist('${id}')" class="bg-zinc-900 text-zinc-500 px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded">Suppr</button>
+                        <div id="admin-services">
+                            <h3 class="text-xs font-bold uppercase tracking-widest mb-4 text-zinc-500 italic">Réservations Services</h3>
+                            <div id="list-services" class="space-y-2"></div>
                         </div>
-                    </div>`;
+                    </div>
+                    <button onclick="showView('home')" class="mt-10 text-[9px] border border-white/10 px-6 py-2 uppercase">Déconnexion</button>
+                </div>`;
+            
+            db.ref('registrations_tournee').on('value', s => {
+                const list = document.getElementById('list-tour'); list.innerHTML = "";
+                if(s.val()) Object.keys(s.val()).reverse().forEach(id => {
+                    const r = s.val()[id];
+                    list.innerHTML += `<div class="glass p-4 text-[10px]"><b>${r.name}</b> (${r.city})<br><span class="text-zinc-600">${r.phone}</span></div>`;
                 });
-            } else { html += '<p class="text-zinc-600 py-20 italic text-center">Aucune inscription pour le moment.</p>'; }
-            container.innerHTML = `<div class="w-full flex flex-col items-center">${html}</div>`;
+            });
+
+            db.ref('reservations_services').on('value', s => {
+                const list = document.getElementById('list-services'); list.innerHTML = "";
+                if(s.val()) Object.keys(s.val()).reverse().forEach(id => {
+                    const r = s.val()[id];
+                    list.innerHTML += `<div class="glass p-4 text-[10px] border-l-2 border-green-500"><b>${r.type}</b> - ${r.name}<br>Date: ${r.preferred_date}<br><span class="text-zinc-600">${r.phone}</span></div>`;
+                });
+            });
         }
 
         showView('home');
