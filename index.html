@@ -18,7 +18,6 @@
             background-size: cover; background-position: center; background-attachment: fixed;
         }
 
-        /* NOUVELLE PALETTE : ROUGE & NOIR */
         .accent-color { color: #FF0000; }
         .bg-accent { background-color: #8B0000; }
         .bg-accent:hover { background-color: #FF0000; }
@@ -69,7 +68,6 @@
     </footer>
 
     <script>
-        // Ta configuration Firebase reste identique
         const firebaseConfig = {
             apiKey: "AIzaSyCaKG3bQcenE4yyGPzHoUEwr9lJ6OAssXQ",
             authDomain: "vibz-lab.firebaseapp.com",
@@ -88,7 +86,6 @@
             currentView = viewName;
             const container = document.getElementById('main-content');
             
-            // Gestion active des liens nav
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active', 'accent-color'));
             const activeNav = document.getElementById('nav-' + (viewName === 'register' ? 'home' : viewName));
             if(activeNav) activeNav.classList.add('active');
@@ -102,12 +99,12 @@
                                 CREATE <span class="accent-color italic">BEYOND</span><br>LIMITS.
                             </h2>
                             <p class="text-zinc-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed mt-6">
-                                Écosystème premium dédié à la production audiovisuelle et à l'incubation de talents.
+                                Écosystème premium dédié à la production audiovisuelle et à l'incubation de talents créatifs au Togo.
                             </p>
                         </div>
                         <div class="flex justify-center gap-4">
-                            <button onclick="showView('services')" class="bg-accent text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest transition">Nos Services</button>
-                            <button onclick="showView('tournee')" class="border border-white/10 text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition">Voir la Tournée</button>
+                            <button onclick="showView('services')" class="bg-accent text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest transition">Nos Prestations</button>
+                            <button onclick="showView('tournee')" class="border border-white/10 text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition">La Tournée</button>
                         </div>
                     </div>
                 `;
@@ -115,25 +112,20 @@
             
             else if (viewName === 'tournee') {
                 container.innerHTML = `
-                    <div class="max-w-5xl w-full py-10 animate-in">
+                    <div class="max-w-6xl w-full py-10 animate-in">
                         <div class="text-center mb-16">
                             <h2 class="text-4xl font-black italic uppercase accent-color">Tournée Découverte</h2>
-                            <p class="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">À la recherche des pépites du Togo</p>
+                            <p class="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">Dénicheur de pépites nationales</p>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            ${['Sokodé', 'Kara', 'Mango', 'Dapaong'].map(ville => `
-                                <div class="glass p-8 border-l-4 border-red-600">
-                                    <h3 class="font-black text-xl uppercase italic mb-1">${ville}</h3>
-                                    <p class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">Étape Programmée</p>
-                                    <button onclick="showView('register')" class="text-[10px] font-black accent-color uppercase tracking-tighter">S'inscrire →</button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+                            ${['Sotouboua', 'Sokodé', 'Kara', 'Mango', 'Dapaong'].map(ville => `
+                                <div class="glass p-6 border-l-4 border-red-600">
+                                    <h3 class="font-black text-lg uppercase italic mb-1">${ville}</h3>
+                                    <p class="text-[8px] text-zinc-500 uppercase tracking-widest mb-4">Étape Programmée</p>
+                                    <button onclick="showView('register')" class="text-[9px] font-black accent-color uppercase tracking-tighter hover:underline">S'inscrire →</button>
                                 </div>
                             `).join('')}
-                        </div>
-                        
-                        <div class="mt-12 glass p-10 text-center">
-                            <p class="text-sm text-zinc-400">Vous êtes un artiste dans l'une de ces villes ?</p>
-                            <button onclick="showView('register')" class="mt-4 bg-white text-black px-8 py-3 font-black uppercase text-[10px] tracking-widest">Réserver une session Lab</button>
                         </div>
                     </div>
                 `;
@@ -144,23 +136,24 @@
                     <div class="max-w-5xl w-full py-10 animate-in text-center">
                         <h2 class="text-4xl font-black uppercase italic mb-16">Nos <span class="accent-color">Prestations</span></h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div class="glass p-10">
-                                <div class="text-3xl mb-4">🎬</div>
-                                <h3 class="font-black uppercase mb-2">Production Vidéo</h3>
-                                <p class="text-xs text-zinc-500 mb-6 text-center">Clips 4K, Sessions Live "Le Lab", Reels & Publicités.</p>
-                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Demander un devis</a>
-                            </div>
-                            <div class="glass p-10">
+                            <div class="glass p-10 flex flex-col items-center">
                                 <div class="text-3xl mb-4">🎙️</div>
-                                <h3 class="font-black uppercase mb-2">Studio Audio</h3>
-                                <p class="text-xs text-zinc-500 mb-6 text-center">Enregistrement, Mixage, Mastering & Podcast.</p>
-                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Réserver le studio</a>
+                                <h3 class="font-black uppercase mb-2">Podcast</h3>
+                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Production, mixage et diffusion de vos shows audio professionnels.</p>
+                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Réserver</a>
                             </div>
-                            <div class="glass p-10">
-                                <div class="text-3xl mb-4">🎨</div>
-                                <h3 class="font-black uppercase mb-2">Branding</h3>
-                                <p class="text-xs text-zinc-500 mb-6 text-center">Logos, Affiches, Identité visuelle Artiste.</p>
-                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Pack Identité</a>
+                            <div class="glass p-10 flex flex-col items-center">
+                                <div class="text-3xl mb-4">📹</div>
+                                <h3 class="font-black uppercase mb-2">Live Show</h3>
+                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Captation multicaméra et diffusion live de vos événements.</p>
+                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Nous contacter</a>
+                            </div>
+                            <div class="glass p-10 opacity-50 flex flex-col items-center relative overflow-hidden">
+                                <div class="absolute top-4 right-[-20px] bg-red-600 text-white text-[8px] font-bold px-8 py-1 rotate-45 uppercase">Bientôt</div>
+                                <div class="text-3xl mb-4">🎬</div>
+                                <h3 class="font-black uppercase mb-2">Clip Vidéo</h3>
+                                <p class="text-xs text-zinc-500 mb-6 leading-relaxed">Réalisation cinématographique de clips musicaux.</p>
+                                <span class="text-[9px] font-black text-zinc-600 uppercase">Indisponible</span>
                             </div>
                         </div>
                     </div>
@@ -176,6 +169,7 @@
                             <input type="text" id="name" placeholder="NOM COMPLET / NOM D'ARTISTE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
                             <select id="city" class="w-full p-4 bg-black border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
                                 <option value="">CHOISIR VOTRE VILLE</option>
+                                <option value="SOTOUBOUA">SOTOUBOUA</option>
                                 <option value="SOKODÉ">SOKODÉ</option>
                                 <option value="KARA">KARA</option>
                                 <option value="MANGO">MANGO</option>
@@ -190,16 +184,10 @@
             }
 
             else if (viewName === 'success') {
-                container.innerHTML = `<div class="text-center py-32 animate-in"><h2 class="text-5xl font-black accent-color italic">VALIDÉ.</h2><p class="text-zinc-500 text-[10px] uppercase tracking-widest mt-4">L'assistante exécutive reviendra vers vous pour le contrat.</p><button onclick="showView('home')" class="mt-12 text-[10px] font-bold underline uppercase tracking-widest">Accueil</button></div>`;
-            }
-
-            else if (viewName === 'admin') {
-                // Ta fonction renderAdmin originale est appelée ici
-                db.ref('registrations').once('value', (s) => renderAdmin(s.val()));
+                container.innerHTML = `<div class="text-center py-32 animate-in"><h2 class="text-5xl font-black accent-color italic">REÇU.</h2><p class="text-zinc-500 text-[10px] uppercase tracking-widest mt-4">L'assistante reviendra vers vous très prochainement.</p><button onclick="showView('home')" class="mt-12 text-[10px] font-bold underline uppercase tracking-widest">Accueil</button></div>`;
             }
         }
 
-        // --- Tes fonctions Firebase restent identiques mais on adapte le rendu Admin au nouveau style ---
         function handleRegister() {
             const name = document.getElementById('name').value;
             const city = document.getElementById('city').value;
