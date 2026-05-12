@@ -13,41 +13,52 @@
         body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; }
 
         .bg-studio {
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), 
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(5,5,5,1)), 
                         url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80');
             background-size: cover; background-position: center; background-attachment: fixed;
         }
 
-        .accent-color { color: #FFD700; }
-        .bg-accent { background-color: #FFD700; }
+        /* NOUVELLE PALETTE : ROUGE & NOIR */
+        .accent-color { color: #FF0000; }
+        .bg-accent { background-color: #8B0000; }
+        .bg-accent:hover { background-color: #FF0000; }
+        
         .notification-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ff0000; border-radius: 50%; display: none; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .animate-in { animation: fadeIn 1s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Style spécifique pour le Monogramme VL */
         .vl-box {
-            background-color: #FFD700;
-            color: black;
+            background-color: #FF0000;
+            color: white;
             padding: 2px 8px;
             font-weight: 900;
             font-style: italic;
             border-radius: 2px;
             margin-right: 10px;
         }
+
+        .nav-link { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: 0.3s; color: #666; }
+        .nav-link:hover, .nav-link.active { color: white; }
     </style>
 </head>
 <body class="bg-studio flex flex-col">
 
-    <!-- Navigation avec Logo VL -->
-    <nav class="w-full flex justify-between items-center px-6 md:px-12 py-8 z-50">
+    <nav class="w-full flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-8 z-50 gap-6">
         <div class="flex items-center cursor-pointer" onclick="showView('home')">
             <span class="vl-box text-xl">VL</span>
             <h1 class="text-xl font-black tracking-tighter uppercase italic">VIBZ <span class="accent-color">LAB</span></h1>
         </div>
+        
+        <div class="flex gap-8 items-center bg-white/5 px-6 py-3 rounded-full border border-white/5">
+            <span class="nav-link" id="nav-home" onclick="showView('home')">Accueil</span>
+            <span class="nav-link" id="nav-tour" onclick="showView('tournee')">Tournée Découverte</span>
+            <span class="nav-link" id="nav-services" onclick="showView('services')">Prestations</span>
+        </div>
+
         <div class="relative">
             <div id="admin-dot" class="notification-dot"></div>
-            <button onclick="promptAdmin()" class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition">Staff Access</button>
+            <button onclick="promptAdmin()" class="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-600 hover:text-white transition">Staff</button>
         </div>
     </nav>
 
@@ -58,6 +69,7 @@
     </footer>
 
     <script>
+        // Ta configuration Firebase reste identique
         const firebaseConfig = {
             apiKey: "AIzaSyCaKG3bQcenE4yyGPzHoUEwr9lJ6OAssXQ",
             authDomain: "vibz-lab.firebaseapp.com",
@@ -72,62 +84,122 @@
         const db = firebase.database();
         let currentView = 'home';
 
-        db.ref('registrations').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && currentView !== 'admin') document.getElementById('admin-dot').style.display = 'block';
-            if (currentView === 'admin') renderAdmin(data);
-        });
-
         function showView(viewName) {
             currentView = viewName;
             const container = document.getElementById('main-content');
             
+            // Gestion active des liens nav
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active', 'accent-color'));
+            const activeNav = document.getElementById('nav-' + (viewName === 'register' ? 'home' : viewName));
+            if(activeNav) activeNav.classList.add('active');
+
             if (viewName === 'home') {
                 container.innerHTML = `
-                    <div class="max-w-4xl w-full text-center py-16 space-y-10 animate-in">
+                    <div class="max-w-4xl w-full text-center py-20 space-y-10 animate-in">
                         <div class="space-y-4">
-                            <span class="text-accent text-[10px] font-bold uppercase tracking-[0.5em] border border-accent/30 px-4 py-2 rounded-full">Innovation & Media Hub</span>
-                            <h2 class="text-5xl md:text-7xl font-black tracking-tighter leading-none pt-4">
-                                L'ÉPICENTRE DE LA <br><span class="accent-color italic text-white">CRÉATION DIGITALE.</span>
+                            <span class="text-white text-[10px] font-bold uppercase tracking-[0.5em] bg-red-600/20 border border-red-600/30 px-4 py-2 rounded-full">Luxe Urbain & Media Hub</span>
+                            <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none pt-4">
+                                CREATE <span class="accent-color italic">BEYOND</span><br>LIMITS.
                             </h2>
-                            <p class="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed mt-6">
-                                VIBZ LAB redéfinit les standards de la production média. Un écosystème premium dédié au streaming, aux podcasts et à l'incubation de talents créatifs au Togo.
+                            <p class="text-zinc-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed mt-6">
+                                Écosystème premium dédié à la production audiovisuelle et à l'incubation de talents.
                             </p>
                         </div>
-
-                        <div class="flex flex-col md:flex-row justify-center gap-4 pt-4">
-                            <button onclick="showView('register')" class="bg-accent text-black px-12 py-5 font-black uppercase text-xs tracking-widest hover:brightness-110 transition">
-                                Devenir Partenaire
-                            </button>
-                            <div class="flex items-center justify-center px-8 py-5 border border-white/10 text-white/50 text-[10px] uppercase font-bold tracking-widest">
-                                Visionary Hub 2026
-                            </div>
+                        <div class="flex justify-center gap-4">
+                            <button onclick="showView('services')" class="bg-accent text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest transition">Nos Services</button>
+                            <button onclick="showView('tournee')" class="border border-white/10 text-white px-10 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition">Voir la Tournée</button>
                         </div>
                     </div>
                 `;
             } 
             
+            else if (viewName === 'tournee') {
+                container.innerHTML = `
+                    <div class="max-w-5xl w-full py-10 animate-in">
+                        <div class="text-center mb-16">
+                            <h2 class="text-4xl font-black italic uppercase accent-color">Tournée Découverte</h2>
+                            <p class="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">À la recherche des pépites du Togo</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            ${['Sokodé', 'Kara', 'Mango', 'Dapaong'].map(ville => `
+                                <div class="glass p-8 border-l-4 border-red-600">
+                                    <h3 class="font-black text-xl uppercase italic mb-1">${ville}</h3>
+                                    <p class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">Étape Programmée</p>
+                                    <button onclick="showView('register')" class="text-[10px] font-black accent-color uppercase tracking-tighter">S'inscrire →</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="mt-12 glass p-10 text-center">
+                            <p class="text-sm text-zinc-400">Vous êtes un artiste dans l'une de ces villes ?</p>
+                            <button onclick="showView('register')" class="mt-4 bg-white text-black px-8 py-3 font-black uppercase text-[10px] tracking-widest">Réserver une session Lab</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            else if (viewName === 'services') {
+                container.innerHTML = `
+                    <div class="max-w-5xl w-full py-10 animate-in text-center">
+                        <h2 class="text-4xl font-black uppercase italic mb-16">Nos <span class="accent-color">Prestations</span></h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="glass p-10">
+                                <div class="text-3xl mb-4">🎬</div>
+                                <h3 class="font-black uppercase mb-2">Production Vidéo</h3>
+                                <p class="text-xs text-zinc-500 mb-6 text-center">Clips 4K, Sessions Live "Le Lab", Reels & Publicités.</p>
+                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Demander un devis</a>
+                            </div>
+                            <div class="glass p-10">
+                                <div class="text-3xl mb-4">🎙️</div>
+                                <h3 class="font-black uppercase mb-2">Studio Audio</h3>
+                                <p class="text-xs text-zinc-500 mb-6 text-center">Enregistrement, Mixage, Mastering & Podcast.</p>
+                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Réserver le studio</a>
+                            </div>
+                            <div class="glass p-10">
+                                <div class="text-3xl mb-4">🎨</div>
+                                <h3 class="font-black uppercase mb-2">Branding</h3>
+                                <p class="text-xs text-zinc-500 mb-6 text-center">Logos, Affiches, Identité visuelle Artiste.</p>
+                                <a href="https://wa.me/228XXXXXXXX" class="text-[9px] font-black accent-color uppercase border-b border-red-600 pb-1">Pack Identité</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             else if (viewName === 'register') {
                 container.innerHTML = `
                     <div class="max-w-md w-full glass p-10 mt-6 animate-in">
-                        <h2 class="text-2xl font-black uppercase italic mb-2 tracking-tighter">Formulaire Partenaire</h2>
-                        <p class="text-zinc-500 text-[9px] tracking-[0.3em] uppercase mb-10 border-l-2 border-yellow-500 pl-4 italic">Rejoignez le mouvement</p>
+                        <h2 class="text-2xl font-black uppercase italic mb-2 tracking-tighter">Inscription Tournée</h2>
+                        <p class="text-zinc-500 text-[9px] tracking-[0.3em] uppercase mb-10 border-l-2 border-red-600 pl-4 italic">Rejoignez la Tournée Découverte</p>
                         <div class="space-y-4">
-                            <input type="text" id="name" placeholder="NOM COMPLET / NOM D'ARTISTE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded-sm transition">
-                            <input type="text" id="city" placeholder="VILLE (EX: LOMÉ, KARA, SOTOUBOUA)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded-sm transition">
-                            <input type="tel" id="phone" placeholder="WHATSAPP (AVEC INDICATIF PAYS)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-yellow-500 outline-none rounded-sm transition">
-                            <button onclick="handleRegister()" class="w-full bg-accent text-black py-5 font-black uppercase text-xs tracking-widest mt-6 hover:scale-[1.01] transition-transform">Envoyer au Lab</button>
-                            <button onclick="showView('home')" class="w-full text-zinc-600 py-2 text-[9px] font-bold uppercase tracking-widest">Retour</button>
+                            <input type="text" id="name" placeholder="NOM COMPLET / NOM D'ARTISTE" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
+                            <select id="city" class="w-full p-4 bg-black border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
+                                <option value="">CHOISIR VOTRE VILLE</option>
+                                <option value="SOKODÉ">SOKODÉ</option>
+                                <option value="KARA">KARA</option>
+                                <option value="MANGO">MANGO</option>
+                                <option value="DAPAONG">DAPAONG</option>
+                            </select>
+                            <input type="tel" id="phone" placeholder="WHATSAPP (EX: +228...)" class="w-full p-4 bg-white/5 border border-zinc-800 text-sm focus:border-red-600 outline-none rounded-sm transition text-white">
+                            <button onclick="handleRegister()" class="w-full bg-accent text-white py-5 font-black uppercase text-xs tracking-widest mt-6 hover:scale-[1.01] transition-transform">Valider ma candidature</button>
+                            <button onclick="showView('tournee')" class="w-full text-zinc-600 py-2 text-[9px] font-bold uppercase tracking-widest">Annuler</button>
                         </div>
                     </div>
                 `;
             }
 
             else if (viewName === 'success') {
-                container.innerHTML = `<div class="text-center py-32 animate-in"><h2 class="text-5xl font-black accent-color italic">REÇU.</h2><p class="text-zinc-500 text-[10px] uppercase tracking-widest mt-4">Notre département stratégique analyse votre profil.</p><button onclick="showView('home')" class="mt-12 text-[10px] font-bold underline uppercase tracking-widest">Accueil</button></div>`;
+                container.innerHTML = `<div class="text-center py-32 animate-in"><h2 class="text-5xl font-black accent-color italic">VALIDÉ.</h2><p class="text-zinc-500 text-[10px] uppercase tracking-widest mt-4">L'assistante exécutive reviendra vers vous pour le contrat.</p><button onclick="showView('home')" class="mt-12 text-[10px] font-bold underline uppercase tracking-widest">Accueil</button></div>`;
+            }
+
+            else if (viewName === 'admin') {
+                // Ta fonction renderAdmin originale est appelée ici
+                db.ref('registrations').once('value', (s) => renderAdmin(s.val()));
             }
         }
 
+        // --- Tes fonctions Firebase restent identiques mais on adapte le rendu Admin au nouveau style ---
         function handleRegister() {
             const name = document.getElementById('name').value;
             const city = document.getElementById('city').value;
@@ -135,14 +207,13 @@
             if(name && city && phone) {
                 db.ref('registrations').push({ name, city, phone, date: Date.now() });
                 showView('success');
-            } else { alert("Informations requises."); }
+            } else { alert("Veuillez remplir tous les champs."); }
         }
 
         function promptAdmin() {
             if (prompt("CODE STAFF :") === "1120") {
                 document.getElementById('admin-dot').style.display = 'none';
                 showView('admin');
-                db.ref('registrations').once('value', (s) => renderAdmin(s.val()));
             }
         }
 
@@ -152,23 +223,23 @@
 
         function renderAdmin(data) {
             const container = document.getElementById('main-content');
-            let html = '<div class="flex justify-between items-center w-full max-w-2xl mt-10 mb-8"><h2 class="text-xl font-black accent-color uppercase italic">Gestion des Profils</h2><button onclick="showView(\'home\')" class="text-[9px] text-white/30 uppercase font-bold border border-white/10 px-4 py-2">Fermer</button></div>';
+            let html = '<div class="flex justify-between items-center w-full max-w-2xl mt-10 mb-8"><h2 class="text-xl font-black accent-color uppercase italic">Candidatures Tournée</h2><button onclick="showView(\'home\')" class="text-[9px] text-white/30 uppercase font-bold border border-white/10 px-4 py-2">Fermer</button></div>';
             if (data) {
                 Object.keys(data).reverse().forEach(id => {
                     const reg = data[id];
                     html += `
-                    <div class="w-full max-w-2xl glass p-6 mb-4 flex justify-between items-center">
+                    <div class="w-full max-w-2xl glass p-6 mb-4 flex justify-between items-center border-l-2 border-red-600/30">
                         <div>
                             <p class="font-black text-white uppercase italic text-lg leading-none">${reg.name}</p>
                             <p class="text-[9px] text-zinc-600 uppercase tracking-widest mt-2">${reg.city} • ${new Date(reg.date).toLocaleDateString()}</p>
                         </div>
                         <div class="flex gap-2">
-                            <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-green-600/10 text-green-500 px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded border border-green-500/20">Contact</a>
-                            <button onclick="deleteArtist('${id}')" class="bg-red-600/10 text-red-500 px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded border border-red-600/20">Suppr</button>
+                            <a href="https://wa.me/${reg.phone.replace(/\+/g, '')}" target="_blank" class="bg-red-600/10 text-white px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded border border-red-600/20">Contacter</a>
+                            <button onclick="deleteArtist('${id}')" class="bg-zinc-900 text-zinc-500 px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded">Suppr</button>
                         </div>
                     </div>`;
                 });
-            } else { html += '<p class="text-zinc-600 py-20 italic text-center">Aucun dossier enregistré.</p>'; }
+            } else { html += '<p class="text-zinc-600 py-20 italic text-center">Aucune inscription pour le moment.</p>'; }
             container.innerHTML = `<div class="w-full flex flex-col items-center">${html}</div>`;
         }
 
