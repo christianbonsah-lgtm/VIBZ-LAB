@@ -11,19 +11,29 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         
         body { 
+            background-color: #f9fafb; 
+            color: #111827; 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
             min-height: 100vh; 
             scroll-behavior: smooth; 
-            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .bg-studio {
+            background: linear-gradient(rgba(249, 250, 251, 0.93), rgba(249, 250, 251, 0.98)), 
+                        url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
         }
 
-        /* DÉGRADÉS & PALETTE COMMUNE */
+        /* PALETTE LUMINEUSE & DEGRADES SÉLECTIONNÉS */
         .text-gradient {
             background: linear-gradient(to right, #d946ef, #3b82f6, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        
         .accent-magenta { color: #d946ef; }
         .accent-cyan { color: #06b6d4; }
         
@@ -35,100 +45,76 @@
             background: linear-gradient(135deg, #e879f9, #60a5fa);
             box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
         }
-
-        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .step-card { transition: 0.4s; border-top: 2px solid transparent; position: relative; overflow: hidden; }
-        .step-num { font-size: 40px; font-weight: 900; opacity: 0.08; position: absolute; top: 10px; right: 20px; }
-
-        /* ==========================================================================
-           GESTION AUTOMATIQUE DU MODE DE L'UTILISATEUR (PAR DÉFAUT : LIGHT MOD)
-           ========================================================================== */
         
-        /* PAR DÉFAUT : MODE CLAIR (LIGHT MODE) */
-        body { background-color: #f9fafb; color: #111827; }
-        .bg-studio {
-            background: linear-gradient(rgba(249, 250, 251, 0.93), rgba(249, 250, 251, 0.98)), 
-                        url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover; background-position: center; background-attachment: fixed;
-        }
+        /* EFFET DE VERRE CLAIR (LIGHT GLASSMORPHISM) */
         .glass { 
             background: rgba(255, 255, 255, 0.45); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.6); 
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
         }
-        .step-card:hover { 
-            border-top: 2px solid #06b6d4; background: rgba(255, 255, 255, 0.75);
-            transform: translateY(-4px); box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08);
+        
+        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* MONOGRAMME DU LOGO VL */
+        .vl-box { 
+            background: linear-gradient(135deg, #d946ef, #06b6d4); 
+            color: white; 
+            padding: 3px 10px; 
+            font-weight: 900; 
+            font-style: italic; 
+            border-radius: 4px; 
+            margin-right: 12px;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
         }
-        .nav-container { background: rgba(255, 255, 255, 0.7); border-color: rgba(229, 231, 235, 0.5); }
-        .nav-pill { background: rgba(243, 244, 246, 0.8); border-color: rgba(229, 231, 235, 0.5); }
-        .nav-link { color: #6b7280; }
+        
+        .nav-link { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: 0.3s; color: #6b7280; }
         .nav-link:hover, .nav-link.active { color: #111827; }
-        .footer-container { background: rgba(255, 255, 255, 0.4); border-color: rgba(229, 231, 235, 0.6); }
-        .input-box { background: #ffffff; border-color: #e5e7eb; color: #111827; }
-        .input-box-select { background: #ffffff; border-color: #e5e7eb; color: #111827; }
-
-        /* DÉTECTION DU MODE SOMBRE DU TÉLÉPHONE (DARK MODE) */
-        @media (prefers-color-scheme: dark) {
-            body { background-color: #030712; color: #f3f4f6; }
-            .bg-studio {
-                background: linear-gradient(rgba(3, 7, 18, 0.95), rgba(3, 7, 18, 1)), 
-                            url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80');
-                background-size: cover; background-position: center; background-attachment: fixed;
-            }
-            .glass { 
-                background: rgba(255, 255, 255, 0.03); 
-                backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.08); 
-                box-shadow: none;
-            }
-            .step-card:hover { 
-                border-top: 2px solid #06b6d4; background: rgba(6, 182, 212, 0.03);
-                transform: translateY(-2px); box-shadow: none;
-            }
-            .text-gray-900 { color: #ffffff !important; }
-            .text-gray-500 { color: #9ca3af !important; }
-            .nav-container { background: rgba(3, 7, 18, 0.8); border-color: rgba(255, 255, 255, 0.05); }
-            .nav-pill { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.05); }
-            .nav-link { color: #9ca3af; }
-            .nav-link:hover, .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-            .footer-container { background: rgba(3, 7, 18, 0.4); border-color: rgba(255, 255, 255, 0.05); }
-            .input-box { background: rgba(255, 255, 255, 0.05); border-color: #1f2937; color: #ffffff; }
-            .input-box-select { background: #030712; border-color: #1f2937; color: #ffffff; }
-            .border-gray-200, .border-gray-300 { border-color: rgba(255, 255, 255, 0.08) !important; }
-        }
-
         .nav-link.active { border-bottom: 2px solid #06b6d4; padding-bottom: 4px; }
+        
+        .step-card { transition: 0.4s; border-top: 2px solid transparent; position: relative; overflow: hidden; }
+        .step-card:hover { 
+            border-top: 2px solid #06b6d4; 
+            background: rgba(255, 255, 255, 0.75);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.08);
+        }
+        .step-num { font-size: 40px; font-weight: 900; opacity: 0.08; position: absolute; top: 10px; right: 20px; color: #111827; }
+
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        @media (prefers-color-scheme: dark) { ::-webkit-scrollbar-thumb { background: #1f2937; } }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
     </style>
 </head>
 <body class="bg-studio flex flex-col">
 
-    <nav class="nav-container w-full flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-4 z-50 gap-6 sticky top-0 backdrop-blur-xl border-b">
+    <nav class="w-full flex flex-col md:flex-row justify-between items-center px-6 md:px-12 py-5 z-50 gap-6 sticky top-0 bg-white/70 backdrop-blur-xl border-b border-gray-200/50">
         <div class="flex items-center cursor-pointer" onclick="showView('home')">
-            <img src="image_3ec25b.png" alt="VIBZ LAB Logo" class="h-16 w-auto object-contain">
+            <span class="vl-box text-xl">VL</span>
+            <div class="flex flex-col justify-center leading-none">
+                <h1 class="text-2xl font-black tracking-widest uppercase text-gray-900 m-0">VIBZ</h1>
+                <span class="text-[10px] font-bold tracking-[0.45em] text-gradient uppercase pl-0.5">L A B</span>
+            </div>
         </div>
         
-        <div class="nav-pill flex gap-8 items-center px-8 py-3 rounded-full border">
+        <div class="flex gap-8 items-center bg-gray-100/80 px-8 py-3 rounded-full border border-gray-200/50">
             <span class="nav-link active" id="nav-home" onclick="showView('home')">Accueil</span>
             <span class="nav-link" id="nav-tour" onclick="showView('tournee')">Tournée</span>
             <span class="nav-link" id="nav-services" onclick="showView('services')">Prestations</span>
         </div>
 
-        <button onclick="promptAdmin()" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-cyan-500 transition">Staff Access</button>
+        <button onclick="promptAdmin()" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-gray-900 transition">Staff Access</button>
     </nav>
 
     <main id="main-content" class="flex-grow flex flex-col items-center px-6 w-full"></main>
 
-    <footer class="footer-container py-12 text-center border-t w-full mt-20 backdrop-blur-md">
-        <div class="mb-4 flex justify-center items-center">
-            <img src="image_3ec25b.png" alt="VIBZ LAB Logo" class="h-12 w-auto object-contain opacity-80">
+    <footer class="py-12 text-center border-t border-gray-200/60 w-full mt-20 bg-white/40 backdrop-blur-md">
+        <div class="mb-6 flex justify-center items-center opacity-60">
+            <span class="vl-box text-sm">VL</span>
+            <span class="text-xs font-black uppercase tracking-widest text-gray-800">Vibz Lab Group</span>
         </div>
         <p class="text-[9px] text-gray-400 uppercase tracking-[0.25em] leading-loose">
             Excellence Créative & Ingénierie Média • Togo 2026
@@ -159,17 +145,17 @@
                 container.innerHTML = `
                     <div class="max-w-4xl w-full text-center py-24 md:py-32 space-y-10 animate-in">
                         <div class="space-y-6">
-                            <span class="text-blue-600 dark:text-cyan-400 text-[10px] font-bold uppercase tracking-[0.5em] bg-blue-50 dark:bg-cyan-950/30 border border-blue-200 dark:border-cyan-800/40 px-6 py-2 rounded-full">The New Media Era</span>
+                            <span class="text-blue-600 text-[10px] font-bold uppercase tracking-[0.5em] bg-blue-50 border border-blue-200 px-6 py-2 rounded-full">The New Media Era</span>
                             <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-none text-gray-900">L'IMPACT PAR <br><span class="text-gradient uppercase">L'IMAGE.</span></h2>
                             <p class="text-gray-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">"Vibz Lab redéfinit la création au Togo. Nous fusionnons luxe urbain et excellence technologique."</p>
                         </div>
                         <div class="flex flex-col md:flex-row justify-center gap-6 pt-8">
                             <button onclick="document.getElementById('vision-section').scrollIntoView({behavior:'smooth'})" class="bg-gradient-accent text-white px-12 py-5 font-black uppercase text-xs tracking-widest transition rounded-lg">Notre Vision</button>
-                            <button onclick="showView('services')" class="border border-gray-300 text-gray-700 dark:text-gray-300 px-12 py-5 font-black uppercase text-xs tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 transition rounded-lg">Réserver une Session</button>
+                            <button onclick="showView('services')" class="border border-gray-300 text-gray-700 px-12 py-5 font-black uppercase text-xs tracking-widest hover:bg-gray-50 transition rounded-lg">Réserver une Session</button>
                         </div>
                     </div>
 
-                    <div id="vision-section" class="max-w-6xl w-full py-24 border-t border-gray-200">
+                    <div id="vision-section" class="max-w-6xl w-full py-24 border-t border-gray-200/60">
                         <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                             <div class="max-w-xl">
                                 <h3 class="text-3xl md:text-4xl font-black uppercase text-gradient mb-4 leading-none">OBJECTIFS & STRATÉGIE</h3>
@@ -177,29 +163,84 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div class="glass p-10 rounded-2xl step-card"><span class="step-num text-gray-900">01</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Émergence</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Lancement de la <b class="text-blue-600 dark:text-cyan-400">Tournée Découverte</b>. Identifier les pépites urbaines et offrir une plateforme premium.</p><button onclick="showView('tournee')" class="text-[9px] font-black accent-cyan uppercase tracking-widest border border-gray-200 dark:border-gray-800 bg-white dark:bg-transparent px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition">Voir la Tournée</button></div>
-                            <div class="glass p-10 rounded-2xl step-card"><span class="step-num text-gray-900">02</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Structure</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Devenir la référence absolue pour la production de <b class="text-gradient">Podcasts</b> et de <b class="text-blue-600 dark:text-cyan-400">Live Shows</b> impactants.</p><button onclick="showView('services')" class="text-[9px] font-black accent-magenta uppercase tracking-widest border border-gray-200 dark:border-gray-800 bg-white dark:bg-transparent px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition">Nos Prestations</button></div>
-                            <div class="glass p-10 rounded-2xl step-card opacity-50"><span class="step-num text-gray-900">03</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Expansion</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Lancement du département <b class="text-gray-900">Cinéma</b>. Exportation du modèle Vibz Lab dans la sous-région.</p><span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">En Développement</span></div>
+                            <div class="glass p-10 rounded-2xl step-card"><span class="step-num">01</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Émergence</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Lancement de la <b class="text-blue-600">Tournée Découverte</b>. Identifier les pépites urbaines et offrir une plateforme premium.</p><button onclick="showView('tournee')" class="text-[9px] font-black accent-cyan uppercase tracking-widest border border-gray-200 bg-white px-4 py-2 hover:bg-gray-50 rounded transition">Voir la Tournée</button></div>
+                            <div class="glass p-10 rounded-2xl step-card"><span class="step-num">02</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Structure</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Devenir la référence absolue pour la production de <b class="text-gradient">Podcasts</b> et de <b class="text-blue-600">Live Shows</b> impactants.</p><button onclick="showView('services')" class="text-[9px] font-black accent-magenta uppercase tracking-widest border border-gray-200 bg-white px-4 py-2 hover:bg-gray-50 rounded transition">Nos Prestations</button></div>
+                            <div class="glass p-10 rounded-2xl step-card opacity-50"><span class="step-num">03</span><h4 class="font-black text-gray-900 uppercase text-lg mb-4 tracking-tight">Expansion</h4><p class="text-xs text-gray-500 leading-relaxed mb-6">Lancement du département <b class="text-gray-900">Cinéma</b>. Exportation du modèle Vibz Lab dans la sous-région.</p><span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">En Développement</span></div>
                         </div>
                     </div>
                 `;
             } 
             else if (viewName === 'tournee') {
-                container.innerHTML = `<div class="max-w-6xl w-full py-20 animate-in text-center"><h2 class="text-4xl font-black uppercase text-gradient leading-none">Tournée Découverte</h2><p class="text-gray-400 text-[10px] tracking-[0.4em] uppercase mt-4">5 Régions • Togo 2026</p><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-16">${['Sotouboua', 'Sokodé', 'Kara', 'Mango', 'Dapaong'].map(v => `<div class="glass p-8 border-l-4 border-cyan-400 rounded-xl group hover:bg-white dark:hover:bg-gray-900/40 transition cursor-pointer" onclick="showView('register')"><h3 class="font-black text-xl uppercase mb-1 text-gray-900 group-hover:text-cyan-500">${v}</h3><p class="text-[8px] text-gray-400 uppercase tracking-widest mb-6">Casting Ouvert</p><span class="text-[9px] font-black accent-magenta uppercase tracking-tighter">Postuler →</span></div>`).join('')}</div></div>`;
+                container.innerHTML = `<div class="max-w-6xl w-full py-20 animate-in text-center"><h2 class="text-4xl font-black uppercase text-gradient leading-none">Tournée Découverte</h2><p class="text-gray-400 text-[10px] tracking-[0.4em] uppercase mt-4">5 Régions • Togo 2026</p><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mt-16">${['Sotouboua', 'Sokodé', 'Kara', 'Mango', 'Dapaong'].map(v => `<div class="glass p-8 border-l-4 border-cyan-400 rounded-xl group hover:bg-white transition cursor-pointer" onclick="showView('register')"><h3 class="font-black text-xl uppercase mb-1 text-gray-900 group-hover:text-cyan-500">${v}</h3><p class="text-[8px] text-gray-400 uppercase tracking-widest mb-6">Casting Ouvert</p><span class="text-[9px] font-black accent-magenta uppercase tracking-tighter">Postuler →</span></div>`).join('')}</div></div>`;
             }
             else if (viewName === 'services') {
                 container.innerHTML = `<div class="max-w-5xl w-full py-20 animate-in text-center"><h2 class="text-4xl font-black uppercase mb-16 leading-none text-gray-900">Nos <span class="text-gradient">Prestations</span></h2><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="glass p-12 rounded-2xl flex flex-col items-center"><div class="text-4xl mb-6">🎙️</div><h3 class="font-black uppercase text-xl mb-4 text-gray-900">Podcast</h3><p class="text-xs text-gray-400 mb-8 leading-relaxed">Set design & Mixage Live.</p><button onclick="showBooking('Podcast')" class="bg-gradient-accent text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-md">Réserver</button></div><div class="glass p-12 rounded-2xl flex flex-col items-center"><div class="text-4xl mb-6">📹</div><h3 class="font-black uppercase text-xl mb-4 text-gray-900">Live Show</h3><p class="text-xs text-gray-400 mb-8 leading-relaxed">Captation 4K & Réalisation.</p><button onclick="showBooking('Live Show')" class="bg-gradient-accent text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-md">Réserver</button></div><div class="glass p-12 rounded-2xl opacity-40 flex flex-col items-center relative overflow-hidden"><div class="absolute top-4 right-[-20px] bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[8px] font-bold px-8 py-1 rotate-45 uppercase">Bientôt</div><div class="text-4xl mb-6">🎬</div><h3 class="font-black uppercase text-xl mb-4 text-gray-900">Clip Vidéo</h3><p class="text-xs text-gray-400 mb-8 leading-relaxed">Cinématographie.</p><span class="text-[9px] font-black text-gray-400 uppercase">Indisponible</span></div></div></div>`;
             }
             else if (viewName === 'register') {
-                container.innerHTML = `<div class="max-w-md w-full glass p-12 mt-10 rounded-2xl animate-in"><h2 class="text-3xl font-black uppercase mb-2 border-l-4 pl-6 text-gray-900" style="border-image: linear-gradient(to bottom, #d946ef, #3b82f6) 1;">Tournée</h2><p class="text-gray-400 text-[9px] tracking-[0.3em] uppercase mb-10 pl-6 font-bold">Inscrivez votre talent</p><div class="space-y-4"><input type="text" id="reg-name" placeholder="NOM D'ARTISTE" class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><select id="reg-city" class="w-full p-5 input-box-select border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><option value="">CHOISIR VOTRE ÉTAPE</option><option value="SOTOUBOUA">SOTOUBOUA</option><option value="SOKODÉ">SOKODÉ</option><option value="KARA">KARA</option><option value="MANGO">MANGO</option><option value="DAPAONG">DAPAONG</option></select><input type="tel" id="reg-phone" placeholder="WHATSAPP (+228...)" class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><button onclick="handleTourRegister()" class="w-full bg-gradient-accent text-white py-6 rounded-lg font-black uppercase text-[10px] tracking-[0.3em] mt-8">Envoyer ma candidature</button></div></div>`;
+                container.innerHTML = `<div class="max-w-md w-full glass p-12 mt-10 rounded-2xl animate-in"><h2 class="text-3xl font-black uppercase mb-2 border-l-4 pl-6 text-gray-900" style="border-image: linear-gradient(to bottom, #d946ef, #3b82f6) 1;">Tournée</h2><p class="text-gray-400 text-[9px] tracking-[0.3em] uppercase mb-10 pl-6 font-bold">Inscrivez votre talent</p><div class="space-y-4"><input type="text" id="reg-name" placeholder="NOM D'ARTISTE" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 transition"><select id="reg-city" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 transition"><option value="">CHOISIR VOTRE ÉTAPE</option><option value="SOTOUBOUA">SOTOUBOUA</option><option value="SOKODÉ">SOKODÉ</option><option value="KARA">KARA</option><option value="MANGO">MANGO</option><option value="DAPAONG">DAPAONG</option></select><input type="tel" id="reg-phone" placeholder="WHATSAPP (+228...)" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 transition"><button onclick="handleTourRegister()" class="w-full bg-gradient-accent text-white py-6 rounded-lg font-black uppercase text-[10px] tracking-[0.3em] mt-8">Envoyer ma candidature</button></div></div>`;
             }
         }
 
         function showBooking(serviceType) {
             const container = document.getElementById('main-content');
-            container.innerHTML = `<div class="max-w-md w-full glass p-12 mt-10 rounded-2xl animate-in"><h2 class="text-3xl font-black uppercase mb-2 border-l-4 pl-6 text-gray-900" style="border-image: linear-gradient(to bottom, #06b6d4, #3b82f6) 1;">${serviceType}</h2><p class="text-gray-400 text-[9px] tracking-[0.3em] uppercase mb-10 pl-6 font-bold">Réserver une session lab</p><div class="space-y-4"><input type="text" id="book-name" placeholder="NOM COMPLET / STRUCTURE" class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><input type="date" id="book-date" class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><textarea id="book-desc" placeholder="DÉCRIVEZ VOTRE BESOIN..." class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none h-32 transition"></textarea><input type="tel" id="book-phone" placeholder="CONTACT WHATSAPP" class="w-full p-5 input-box border rounded-lg text-sm focus:border-cyan-400 outline-none transition"><button onclick="handleServiceBooking('${serviceType}')" class="w-full bg-gradient-accent text-white py-6 rounded-lg font-black uppercase text-[10px] tracking-[0.3em] mt-8">Confirmer la demande</button></div></div>`;
+            container.innerHTML = `<div class="max-w-md w-full glass p-12 mt-10 rounded-2xl animate-in"><h2 class="text-3xl font-black uppercase mb-2 border-l-4 pl-6 text-gray-900" style="border-image: linear-gradient(to bottom, #06b6d4, #3b82f6) 1;">${serviceType}</h2><p class="text-gray-400 text-[9px] tracking-[0.3em] uppercase mb-10 pl-6 font-bold">Réserver une session lab</p><div class="space-y-4"><input type="text" id="book-name" placeholder="NOM COMPLET / STRUCTURE" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 transition"><input type="date" id="book-date" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-400 transition"><textarea id="book-desc" placeholder="DÉCRIVEZ VOTRE BESOIN..." class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 h-32 transition"></textarea><input type="tel" id="book-phone" placeholder="CONTACT WHATSAPP" class="w-full p-5 bg-white border border-gray-200 rounded-lg text-sm focus:border-cyan-400 outline-none text-gray-900 transition"><button onclick="handleServiceBooking('${serviceType}')" class="w-full bg-gradient-accent text-white py-6 rounded-lg font-black uppercase text-[10px] tracking-[0.3em] mt-8">Confirmer la demande</button></div></div>`;
         }
 
         function showSuccess(title, subtitle) {
             const container = document.getElementById('main-content');
-            container.innerHTML = `<div class="flex flex-col items-center justify-center py-32 text-center animate-in"><img src="image_3ec25b.png" alt="Logo" class="h-24 w-auto object-contain mb-12"><h2 class="text-6xl md:text-7xl font-black uppercase text-gradient tracking-tighter mb-6">${title}</h2><p class="text-gray-400 text-xs md:text-sm uppercase tracking-[0.4em] max-w-lg leading-relaxed px-6 font-bold">${subtitle}</p><button onclick="showView('home')" class="mt-20 text-[10px] font-black
+            container.innerHTML = `<div class="flex flex-col items-center justify-center py-32 text-center animate-in"><div class="w-24 h-24 bg-gradient-accent flex items-center justify-center rotate-45 mb-16 shadow-[0_10px_30px_rgba(6,182,212,0.3)] rounded-xl"><span class="text-white text-4xl font-black italic -rotate-45">VL</span></div><h2 class="text-6xl md:text-7xl font-black uppercase text-gradient tracking-tighter mb-6">${title}</h2><p class="text-gray-500 text-xs md:text-sm uppercase tracking-[0.4em] max-w-lg leading-relaxed px-6 font-bold">${subtitle}</p><button onclick="showView('home')" class="mt-20 text-[10px] font-black uppercase tracking-widest border border-gray-300 bg-white text-gray-700 rounded-lg px-10 py-4 hover:bg-gray-50 transition">Retour à l'accueil</button></div>`;
+        }
+
+        function handleTourRegister() {
+            const name = document.getElementById('reg-name').value;
+            const city = document.getElementById('reg-city').value;
+            const phone = document.getElementById('reg-phone').value;
+            if(name && city && phone) {
+                db.ref('registrations_tournee').push({ name, city, phone, date: Date.now() });
+                showSuccess("ENREGISTRÉ.", "Votre profil a été transmis à notre direction artistique.");
+            } else { alert("Champs requis."); }
+        }
+
+        function handleServiceBooking(type) {
+            const name = document.getElementById('book-name').value;
+            const date = document.getElementById('book-date').value;
+            const desc = document.getElementById('book-desc').value;
+            const phone = document.getElementById('book-phone').value;
+            if(name && date && phone) {
+                db.ref('reservations_services').push({ type, name, preferred_date: date, description: desc || "Non spécifiée", phone, timestamp: Date.now() });
+                showSuccess("REÇU.", `Votre demande pour ${type} est en cours de traitement.`);
+            } else { alert("Champs requis."); }
+        }
+
+        function promptAdmin() { if (prompt("CODE STAFF :") === "1120") showAdmin(); }
+
+        function showAdmin() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = `<div class="w-full max-w-5xl py-20 animate-in"><div class="flex justify-between items-center mb-16 px-4"><h2 class="text-3xl font-black text-gradient uppercase">Staff Dashboard</h2><button onclick="showView('home')" class="text-[10px] border border-gray-300 bg-white px-6 py-2 rounded-lg uppercase font-black text-gray-700 hover:bg-gray-50">Déconnexion</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-12 px-4"><div><h3 class="text-[11px] font-black uppercase tracking-[0.3em] mb-6 text-gray-400 border-b border-gray-200 pb-2 flex justify-between">Tournée <span id="count-tour" class="accent-cyan">0</span></h3><div id="list-tour" class="space-y-4"></div></div><div><h3 class="text-[11px] font-black uppercase tracking-[0.3em] mb-6 text-gray-400 border-b border-gray-200 pb-2 flex justify-between">Réservations <span id="count-services" class="accent-magenta">0</span></h3><div id="list-services" class="space-y-4"></div></div></div></div>`;
+            
+            db.ref('registrations_tournee').on('value', s => {
+                const list = document.getElementById('list-tour'); list.innerHTML = "";
+                const data = s.val(); document.getElementById('count-tour').innerText = data ? Object.keys(data).length : 0;
+                if(data) Object.keys(data).reverse().forEach(id => {
+                    const r = data[id];
+                    list.innerHTML += `<div class="glass p-6 rounded-xl border-l-4 border-cyan-400 flex justify-between items-center group"><div><p class="font-black uppercase text-gray-900 text-sm">${r.name}</p><p class="text-[10px] text-gray-400 uppercase mt-1">${r.city} • <span class="text-cyan-500 font-bold">${r.phone}</span></p></div><div class="flex gap-2 opacity-0 group-hover:opacity-100 transition"><button onclick="contactUser('${r.phone}')" class="bg-emerald-50 border border-emerald-200 text-emerald-600 px-3 py-2 text-[9px] font-black rounded-lg hover:bg-emerald-600 hover:text-white transition">WhatsApp</button><button onclick="deleteEntry('registrations_tournee', '${id}')" class="bg-white text-gray-400 px-3 py-2 text-[9px] font-black rounded-lg hover:text-red-500 border border-gray-200">Suppr</button></div></div>`;
+                });
+            });
+
+            db.ref('reservations_services').on('value', s => {
+                const list = document.getElementById('list-services'); list.innerHTML = "";
+                const data = s.val(); document.getElementById('count-services').innerText = data ? Object.keys(data).length : 0;
+                if(data) Object.keys(data).reverse().forEach(id => {
+                    const r = data[id];
+                    list.innerHTML += `<div class="glass p-6 rounded-xl border-l-4 flex justify-between items-center group" style="border-image: linear-gradient(to bottom, #d946ef, #3b82f6) 1;"><div><p class="font-black uppercase text-gray-900 text-sm">${r.type} - ${r.name}</p><p class="text-[11px] text-gray-600 mt-2 bg-white/80 p-2 border border-gray-200 rounded-lg italic">${r.description || "Aucune description"}</p><p class="text-[10px] text-gray-400 uppercase mt-2">Le ${r.preferred_date} • <span class="text-cyan-500 font-bold">${r.phone}</span></p></div><div class="flex gap-2 opacity-0 group-hover:opacity-100 transition"><button onclick="contactUser('${r.phone}')" class="bg-emerald-50 border border-emerald-200 text-emerald-600 px-3 py-2 text-[9px] font-black rounded-lg hover:bg-emerald-600 hover:text-white transition">WhatsApp</button><button onclick="deleteEntry('reservations_services', '${id}')" class="bg-white text-gray-400 px-3 py-2 text-[9px] font-black rounded-lg hover:text-red-500 border border-gray-200">Suppr</button></div></div>`;
+                });
+            });
+        }
+
+        function contactUser(phone) { const cleanPhone = phone.replace(/[^\d+]/g, ''); window.open(`https://wa.me/${cleanPhone}`, '_blank'); }
+        function deleteEntry(path, id) { if(confirm("Supprimer ?")) db.ref(`${path}/${id}`).remove(); }
+
+        showView('home');
+    </script>
+</body>
+</html>
